@@ -1,6 +1,10 @@
-// ignore_for_file: unused_local_variable
+// ignore_for_file: unused_local_variable, prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:amacle_studio_app/pages/bottom_bar_pages/home_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+
+import 'utils/icons.dart';
 
 void main() {
   runApp(const MyApp());
@@ -9,7 +13,6 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
@@ -27,27 +30,60 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  int currentIndex = 0;
+
+  List pages = [
+    HomePageScreen(),
+    Container(),
+    Container(),
+  ];
+
   @override
   Widget build(BuildContext context) {
+    BarIcons icons = BarIcons();
     var size = MediaQuery.of(context).size;
     return SafeArea(
       child: Scaffold(
-        body: Stack(
-          children: <Widget>[
-            Container(
-              height: size.height * 0.45,
-              decoration: const BoxDecoration(
-                color: Color(0xff006FFD),
-              ),
+        body: pages[currentIndex],
+        bottomNavigationBar: BottomNavigationBar(
+          backgroundColor: Colors.white,
+          selectedFontSize: 15,
+          unselectedFontSize: 15,
+          selectedIconTheme: null,
+          type: BottomNavigationBarType.fixed,
+          currentIndex: currentIndex,
+          onTap: (int index) {
+            setState(
+              () {
+                currentIndex = index;
+              },
+            );
+          },
+          items: [
+            icons.item(
+              70,
+              40,
+              "Home",
+              22,
+              currentIndex == 0,
+              CupertinoIcons.home,
             ),
-            const Column(
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(left: 10, top: 10),
-                  child: CircleAvatar(),
-                ),
-              ],
-            )
+            icons.item(
+              70,
+              40,
+              "Chats",
+              22,
+              currentIndex == 1,
+              CupertinoIcons.chat_bubble,
+            ),
+            icons.item(
+              70,
+              40,
+              "Projects",
+              22,
+              currentIndex == 2,
+              CupertinoIcons.pencil,
+            ),
           ],
         ),
       ),
