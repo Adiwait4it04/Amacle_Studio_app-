@@ -34,7 +34,8 @@ class _HomePageScreenState extends State<HomePageScreen>
     isShowingMainData = true;
   }
 
-  Column maintainence() {
+  Column inProgress() {
+    int percent = 100;
     return Column(
       children: List.generate(6, (index) {
         return Column(
@@ -47,41 +48,39 @@ class _HomePageScreenState extends State<HomePageScreen>
                 color: white,
                 borderRadius: BorderRadius.circular(20),
               ),
-              padding: EdgeInsets.fromLTRB(8, 8, 1, 3),
+              padding: EdgeInsets.fromLTRB(8, 4, 1, 3),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
                     width: width(context) * 0.25,
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         addVerticalSpace(height(context) * 0.01),
-                        AppText(
-                          text: "6:00 PM",
-                          size: width(context) * 0.04,
-                          fontWeight: FontWeight.bold,
-                          color: themeColor,
-                        ),
-                        addVerticalSpace(height(context) * 0.01),
-                        AppText(
-                          text: "May 21",
-                          size: width(context) * 0.035,
-                          fontWeight: FontWeight.normal,
-                          color: Colors.black38,
-                        ),
+                        CircleAvatar(
+                          maxRadius: width(context) * 0.1,
+                          backgroundColor: themeColor.withOpacity(0.12),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(200),
+                            child: Image.network(
+                              "https://picsum.photos/200/300",
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        )
                       ],
                     ),
                   ),
                   Container(
                     margin: EdgeInsets.only(top: 5),
                     width: 1.5,
-                    color: Colors.black54,
                   ),
                   Container(
                     padding: EdgeInsets.fromLTRB(
                       width(context) * 0.02,
-                      width(context) * 0.02,
+                      width(context) * 0.05,
                       width(context) * 0.01,
                       width(context) * 0.02,
                     ),
@@ -89,31 +88,18 @@ class _HomePageScreenState extends State<HomePageScreen>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          children: [
-                            Container(
-                              width: 11.5,
-                              height: 11.5,
-                              decoration: BoxDecoration(
-                                color: themeColor,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                            addHorizontalySpace(width(context) * 0.025),
-                            AppText(
-                              text: "Your Task",
-                              color: black,
-                              size: width(context) * 0.043,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ],
+                        addHorizontalySpace(width(context) * 0.025),
+                        AppText(
+                          text: "Poultry App",
+                          color: black,
+                          size: width(context) * 0.047,
+                          fontWeight: FontWeight.bold,
                         ),
                         addVerticalSpace(height(context) * 0.01),
                         AppText(
-                          text:
-                              "Allow users to sign in or sign up using Firebase Authentication",
-                          size: width(context) * 0.033,
-                          color: Colors.black54,
+                          text: "$percent%",
+                          size: width(context) * 0.037,
+                          color: percent == 100 ? Colors.blue : Colors.black54,
                         ),
                       ],
                     ),
@@ -128,7 +114,7 @@ class _HomePageScreenState extends State<HomePageScreen>
     );
   }
 
-  Column inProgress() {
+  Column maintainence() {
     return Column(
       children: List.generate(6, (index) {
         return Column(
@@ -322,8 +308,8 @@ class _HomePageScreenState extends State<HomePageScreen>
               controller: _tabController,
               children: [
                 SingleChildScrollView(child: maintainence()),
-                Center(child: inProgress()),
-                Center(child: Text('Tab 3 content')),
+                SingleChildScrollView(child: inProgress()),
+                SingleChildScrollView(child: inProgress()),
               ],
             ),
           ),
