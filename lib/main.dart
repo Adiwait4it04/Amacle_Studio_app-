@@ -41,7 +41,7 @@ class _HomePageState extends State<HomePage> {
   List pages = [
     HomePageScreen(),
     ChatsPage(),
-    Container(),
+    ProjectScreen(),
   ];
 
   @override
