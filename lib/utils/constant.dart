@@ -16,6 +16,8 @@ const green = Color(0xff009206);
 const blue = Color(0xff001241);
 const skinColor = Color.fromRGBO(252, 207, 49, 0.25);
 
+const themeColor = Color(0xff006FFD);
+
 // COLOR for GridView Menu
 const skyblue = Color.fromRGBO(12, 131, 218, 0.1);
 const skyblue2 = Color.fromRGBO(0, 194, 255, 0.15);

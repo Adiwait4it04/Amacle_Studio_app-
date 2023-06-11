@@ -5,6 +5,7 @@ class AppText extends StatelessWidget {
   final String text;
   final dynamic fontFamily;
   final Color color;
+  final FontWeight fontWeight;
 
   AppText({
     super.key,
@@ -12,6 +13,7 @@ class AppText extends StatelessWidget {
     this.fontFamily = "",
     this.color = Colors.white,
     this.size = 16,
+    this.fontWeight = FontWeight.normal,
   });
 
   @override
@@ -25,6 +27,7 @@ class AppText extends StatelessWidget {
         color: color,
         fontSize: size,
         fontFamily: fontFamily,
+        fontWeight: fontWeight,
       ),
     );
   }
