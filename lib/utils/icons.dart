@@ -8,9 +8,12 @@ class BarIcons {
       icon: Container(
         height: sizeh,
         width: sizew,
-        child: Icon(icon,
-            size: ic,
-            color: sel ? Color.fromARGB(255, 53, 131, 192) : Colors.grey),
+        child: Icon(
+          icon,
+          size: ic,
+          fill: 0.7,
+          color: sel ? const Color.fromARGB(255, 53, 131, 192) : Colors.grey,
+        ),
       ),
     );
   }
