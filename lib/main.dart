@@ -1,8 +1,10 @@
 // ignore_for_file: unused_local_variable, prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:amacle_studio_app/pages/bottom_bar_pages/chat.dart';
 import 'package:amacle_studio_app/pages/bottom_bar_pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 
 import 'utils/icons.dart';
 
@@ -15,6 +17,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
       home: HomePage(),
@@ -34,7 +39,7 @@ class _HomePageState extends State<HomePage> {
 
   List pages = [
     HomePageScreen(),
-    Container(),
+    ChatsPage(),
     Container(),
   ];
 
