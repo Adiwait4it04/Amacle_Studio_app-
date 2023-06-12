@@ -200,7 +200,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                addVerticalSpace(height(context) * 0.01),
+                                addVerticalSpace(height(context) * 0.029),
                                 CircleAvatar(
                                   maxRadius: width(context) * 0.06,
                                   backgroundColor: themeColor.withOpacity(0.12),
