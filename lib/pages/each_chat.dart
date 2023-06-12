@@ -1,6 +1,8 @@
 import 'package:amacle_studio_app/pages/bottom_bar_pages/chat.dart';
+import 'package:amacle_studio_app/utils/constant.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class Each_Chat extends StatefulWidget {
   const Each_Chat({super.key});
@@ -27,11 +29,7 @@ class _Each_ChatState extends State<Each_Chat> {
                     padding: const EdgeInsets.only(left: 7),
                     child: GestureDetector(
                       onTap: () {
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                            builder: (context) => const ChatsPage(),
-                          ),
-                        );
+                        goBack(context);
                       },
                       child: const Icon(
                         Icons.arrow_back,

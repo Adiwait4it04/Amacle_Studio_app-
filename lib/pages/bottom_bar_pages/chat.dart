@@ -1,7 +1,9 @@
 import 'package:amacle_studio_app/pages/each_chat.dart';
+import 'package:amacle_studio_app/utils/constant.dart';
 import 'package:amacle_studio_app/utils/search_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:get/get.dart';
 
 class ChatsPage extends StatefulWidget {
   const ChatsPage({super.key});
@@ -94,11 +96,8 @@ class _ChatsPageState extends State<ChatsPage> {
                       padding: const EdgeInsets.all(10),
                       child: GestureDetector(
                         onTap: () {
-                          Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(
-                              builder: (context) => const Each_Chat(),
-                            ),
-                          );
+                          // Get.to(() => Each_Chat());
+                          nextScreen(context, Each_Chat());
                         },
                         child: ListView.builder(
                           itemCount: display_list.length,
