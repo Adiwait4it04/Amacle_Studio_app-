@@ -1,5 +1,6 @@
 // ignore_for_file: prefer__ructors, prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:amacle_studio_app/pages/project_detail_screen.dart';
 import 'package:amacle_studio_app/utils/app_text.dart';
 import 'package:amacle_studio_app/utils/styles.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -49,62 +50,68 @@ class _HomePageScreenState extends State<HomePageScreen>
                 borderRadius: BorderRadius.circular(20),
               ),
               padding: EdgeInsets.fromLTRB(8, 4, 1, 3),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    width: width(context) * 0.25,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        addVerticalSpace(height(context) * 0.01),
-                        CircleAvatar(
-                          maxRadius: width(context) * 0.1,
-                          backgroundColor: themeColor.withOpacity(0.12),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(200),
-                            child: Image.network(
-                              "https://picsum.photos/200/300",
-                              fit: BoxFit.cover,
+              child: InkWell(
+                onTap: () {
+                  nextScreen(context, ProjectDetailScreen());
+                },
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: width(context) * 0.25,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          addVerticalSpace(height(context) * 0.01),
+                          CircleAvatar(
+                            maxRadius: width(context) * 0.1,
+                            backgroundColor: themeColor.withOpacity(0.12),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(200),
+                              child: Image.network(
+                                "https://picsum.photos/200/300",
+                                fit: BoxFit.cover,
+                              ),
                             ),
+                          )
+                        ],
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(top: 5),
+                      width: 1.5,
+                    ),
+                    Container(
+                      padding: EdgeInsets.fromLTRB(
+                        width(context) * 0.02,
+                        width(context) * 0.05,
+                        width(context) * 0.01,
+                        width(context) * 0.02,
+                      ),
+                      width: width(context) * 0.62,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          addHorizontalySpace(width(context) * 0.025),
+                          AppText(
+                            text: "Poultry App",
+                            color: black,
+                            size: width(context) * 0.047,
+                            fontWeight: FontWeight.bold,
                           ),
-                        )
-                      ],
+                          addVerticalSpace(height(context) * 0.01),
+                          AppText(
+                            text: "$percent%",
+                            size: width(context) * 0.037,
+                            color:
+                                percent == 100 ? Colors.blue : Colors.black54,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(top: 5),
-                    width: 1.5,
-                  ),
-                  Container(
-                    padding: EdgeInsets.fromLTRB(
-                      width(context) * 0.02,
-                      width(context) * 0.05,
-                      width(context) * 0.01,
-                      width(context) * 0.02,
-                    ),
-                    width: width(context) * 0.62,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        addHorizontalySpace(width(context) * 0.025),
-                        AppText(
-                          text: "Poultry App",
-                          color: black,
-                          size: width(context) * 0.047,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        addVerticalSpace(height(context) * 0.01),
-                        AppText(
-                          text: "$percent%",
-                          size: width(context) * 0.037,
-                          color: percent == 100 ? Colors.blue : Colors.black54,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             addVerticalSpace(height(context) * 0.005),

@@ -53,6 +53,7 @@ dependencies:
   flutter_localized_locales: ^2.0.4
   dio: ^5.1.2
   http_parser: ^4.0.2
+  percent_indicator:
   fl_chart: ^0.62.0
 
 

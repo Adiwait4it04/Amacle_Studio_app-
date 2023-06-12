@@ -6,6 +6,7 @@ import 'package:amacle_studio_app/pages/bottom_bar_pages/project_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 
 import 'utils/icons.dart';
 
@@ -21,7 +22,7 @@ class MyApp extends StatelessWidget {
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
-    return const MaterialApp(
+    return const GetMaterialApp(
       debugShowCheckedModeBanner: false,
       home: HomePage(),
     );
@@ -41,7 +42,7 @@ class _HomePageState extends State<HomePage> {
   List pages = [
     HomePageScreen(),
     ChatsPage(),
-    Container(),
+    ProjectScreen(),
   ];
 
   @override
