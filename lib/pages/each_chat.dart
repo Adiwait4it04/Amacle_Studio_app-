@@ -65,7 +65,7 @@ class _Each_ChatState extends State<Each_Chat> {
             ],
           ),
         ),
-        body: const Column(
+        body: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [],
         ),

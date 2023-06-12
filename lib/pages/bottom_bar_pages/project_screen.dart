@@ -109,8 +109,6 @@ class _ProjectScreenState extends State<ProjectScreen> {
                             onChanged: (String? newValue) {
                               setState(() {
                                 _selectedOption = newValue!;
-                                // Perform sorting based on the selected option
-                                // You can call a sorting function here or modify your data accordingly
                                 print('Selected option: $_selectedOption');
                               });
                             },
@@ -170,8 +168,6 @@ class _ProjectScreenState extends State<ProjectScreen> {
                             onChanged: (String? newValue) {
                               setState(() {
                                 _selectedOptionFilter = newValue!;
-                                // Perform sorting based on the selected option
-                                // You can call a sorting function here or modify your data accordingly
                                 print('Selected option: $_selectedOption');
                               });
                             },

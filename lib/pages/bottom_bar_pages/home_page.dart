@@ -64,11 +64,15 @@ class _HomePageScreenState extends State<HomePageScreen>
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           addVerticalSpace(height(context) * 0.01),
-                          CircleAvatar(
-                            maxRadius: width(context) * 0.1,
-                            backgroundColor: themeColor.withOpacity(0.12),
+                          Container(
+                            height: width(context) * 0.17,
+                            width: width(context) * 0.17,
+                            // maxRadius: width(context) * 0.1,
+                            // backgroundColor: themeColor.withOpacity(0.12),
+                            decoration: BoxDecoration(shape: BoxShape.circle),
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(200),
+                              borderRadius:
+                                  BorderRadius.circular(width(context) * 0.1),
                               child: Image.network(
                                 "https://picsum.photos/200/300",
                                 fit: BoxFit.cover,

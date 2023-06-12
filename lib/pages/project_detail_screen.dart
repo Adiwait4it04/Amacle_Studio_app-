@@ -15,6 +15,16 @@ class ProjectDetailScreen extends StatefulWidget {
 }
 
 class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
+  int todoLength = 8;
+
+  List<bool> check = List.generate(8, (index) => false);
+
+  @override
+  initState() {
+    check.fillRange(0, check.length, false);
+    print(check);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -274,7 +284,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
               SingleChildScrollView(
                 scrollDirection: Axis.vertical,
                 child: Column(
-                  children: List.generate(6, (index) {
+                  children: List.generate(todoLength, (index) {
                     return Column(
                       children: [
                         addVerticalSpace(height(context) * 0.01),
@@ -365,15 +375,26 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   addVerticalSpace(height(context) * 0.02),
-                                  Container(
-                                    width: 60,
-                                    height: 60,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(12),
-                                      color: grey.withOpacity(0.5),
-                                    ),
-                                    child: Center(
-                                      child: Icon(Icons.check),
+                                  InkWell(
+                                    onTap: () {
+                                      check[index] = !check[index];
+                                      setState(() {});
+                                    },
+                                    child: Container(
+                                      width: 60,
+                                      height: 60,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(12),
+                                        color: check[index]
+                                            ? themeColor
+                                            : grey.withOpacity(0.5),
+                                      ),
+                                      child: Center(
+                                        child: Icon(
+                                          Icons.check,
+                                          color: check[index] ? white : null,
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ],
