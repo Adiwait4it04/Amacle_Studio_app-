@@ -55,6 +55,7 @@ dependencies:
   http_parser: ^4.0.2
   percent_indicator:
   fl_chart: ^0.62.0
+  toast:
   phone_number:
 
 

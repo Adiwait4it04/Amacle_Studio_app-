@@ -11,6 +11,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:toast/toast.dart' as toast;
 import '../utils/constant.dart';
 import '../utils/styles.dart';
 
@@ -234,7 +235,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                         padding: const EdgeInsets.only(left: 8.0),
                         child: AppText(
                           text: "Poultry App",
-                          size: width(context) * 0.078,
+                          size: width(context) * 0.068,
                           color: black,
                           fontWeight: FontWeight.bold,
                         ),
@@ -270,7 +271,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                         children: [
                                           AppText(
                                             text: "54%",
-                                            size: width(context) * 0.1,
+                                            size: width(context) * 0.08,
                                             color: white,
                                           ),
                                           AppText(
@@ -294,7 +295,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                         children: [
                                           AppText(
                                             text: "₹1000",
-                                            size: width(context) * 0.088,
+                                            size: width(context) * 0.082,
                                             color: white,
                                           ),
                                           addHorizontalySpace(8),
@@ -553,6 +554,12 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                             toastLength: Toast.LENGTH_SHORT,
                                             gravity: ToastGravity.BOTTOM,
                                             timeInSecForIosWeb: 1,
+                                            backgroundColor: Colors
+                                                .black, // Set the background color to match your app's theme
+                                            textColor: Colors
+                                                .white, // Set the text color to match your app's theme
+                                            fontSize:
+                                                16.0, // Set the font size of the toast message
                                           );
                                         } else if (title.text.isEmpty) {
                                           Fluttertoast.showToast(
@@ -759,7 +766,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                                     bool done = false;
                                                     check[index] =
                                                         !check[index];
-                                                    setState(() {});
+                                                    // setState(() {});
                                                     return await showDialog(
                                                       barrierDismissible: false,
                                                       context: context,
@@ -813,10 +820,11 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                                                       milliseconds:
                                                                           2000),
                                                                   () {
-                                                                imageList
-                                                                    .removeAt(
-                                                                        index);
-                                                                setState(() {});
+                                                                setState(() {
+                                                                  imageList
+                                                                      .removeAt(
+                                                                          index);
+                                                                });
                                                               });
                                                               Navigator.of(
                                                                       context)

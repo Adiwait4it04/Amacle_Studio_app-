@@ -7,6 +7,7 @@ import 'package:amacle_studio_app/pages/bottom_bar_pages/project_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -32,6 +33,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        primarySwatch: Colors.blue,
         fontFamily: GoogleFonts.poppins().fontFamily,
       ),
       home: HomePage(),
@@ -55,13 +57,34 @@ class _HomePageState extends State<HomePage> {
     ProjectScreen(),
   ];
 
+  DateTime? currentBackPressTime;
+
+  Future<bool> _onWillPop() async {
+    DateTime now = DateTime.now();
+    if (currentBackPressTime == null ||
+        now.difference(currentBackPressTime!) > Duration(seconds: 2)) {
+      currentBackPressTime = now;
+      Fluttertoast.showToast(
+        msg: "Press again to exit",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+      );
+      return false;
+    }
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
     BarIcons icons = BarIcons();
     var size = MediaQuery.of(context).size;
     return SafeArea(
       child: Scaffold(
-        body: pages[currentIndex],
+        body: WillPopScope(
+          onWillPop: _onWillPop,
+          child: pages[currentIndex],
+        ),
         bottomNavigationBar: BottomNavigationBar(
           backgroundColor: Colors.white,
           selectedFontSize: 15,

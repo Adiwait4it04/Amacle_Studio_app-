@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:amacle_studio_app/pages/bottom_bar_pages/chat.dart';
 import 'package:amacle_studio_app/utils/constant.dart';
 import 'package:flutter/cupertino.dart';
@@ -14,59 +16,51 @@ class Each_Chat extends StatefulWidget {
 class _Each_ChatState extends State<Each_Chat> {
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          shadowColor: Colors.white,
-          surfaceTintColor: Colors.white,
-          title: Column(
+    return Scaffold(
+      body: Column(
+        children: [
+          addVerticalSpace(height(context) * 0.0428),
+          Row(
+            // crossAxisAlignment: CrossAxisAlignment.center,
+            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 7),
-                    child: GestureDetector(
-                      onTap: () {
-                        goBack(context);
-                      },
-                      child: const Icon(
-                        Icons.arrow_back,
-                        color: Colors.lightBlue,
-                        size: 50,
-                      ),
-                    ),
-                  ),
-                  const Spacer(),
-                  const Padding(
-                    padding: EdgeInsets.only(top: 18),
-                    child: Padding(
-                      padding: EdgeInsets.only(right: 18),
-                      child: Text(
-                        "Haley James",
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20),
-                      ),
-                    ),
-                  ),
-                  const Spacer(),
-                  const Icon(
-                    CupertinoIcons.profile_circled,
+              Padding(
+                padding: const EdgeInsets.only(left: 7),
+                child: GestureDetector(
+                  onTap: () {
+                    goBack(context);
+                  },
+                  child: Icon(
+                    Icons.arrow_back_ios_new,
                     color: Colors.lightBlue,
-                    size: 50,
+                    size: width(context) * 0.065,
                   ),
-                ],
+                ),
+              ),
+              const Spacer(),
+              Text(
+                "Haley James",
+                style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: width(context) * 0.05),
+              ),
+              const Spacer(),
+              CircleAvatar(
+                maxRadius: width(context) * 0.055,
+                backgroundColor: Color(0xFFB4DBFF),
+                // backgroundColor: Colors.transparent,
+                child: Center(
+                  child: Icon(
+                    Icons.person,
+                    size: width(context) * 0.09,
+                    color: Color(0xFFEAF2FF),
+                  ),
+                ),
               ),
             ],
           ),
-        ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [],
-        ),
+        ],
       ),
     );
   }
