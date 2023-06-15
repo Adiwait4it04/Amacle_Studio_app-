@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
@@ -17,6 +19,7 @@ const blue = Color(0xff001241);
 const skinColor = Color.fromRGBO(252, 207, 49, 0.25);
 
 const themeColor = Color(0xff006FFD);
+const graphColor = Color.fromARGB(255, 31, 90, 253);
 
 // COLOR for GridView Menu
 const skyblue = Color.fromRGBO(12, 131, 218, 0.1);
