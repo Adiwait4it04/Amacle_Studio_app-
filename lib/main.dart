@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'utils/icons.dart';
 
@@ -28,8 +29,11 @@ class MyApp extends StatelessWidget {
       DeviceOrientation.portraitUp,
     ]);
     doit();
-    return const GetMaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        fontFamily: GoogleFonts.poppins().fontFamily,
+      ),
       home: HomePage(),
     );
   }
@@ -53,7 +57,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // Global().fetchData();
     BarIcons icons = BarIcons();
     var size = MediaQuery.of(context).size;
     return SafeArea(

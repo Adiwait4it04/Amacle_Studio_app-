@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:photo_view/photo_view.dart';
 
 import 'constant.dart';
 import 'styles.dart';
@@ -61,4 +64,29 @@ Widget starBar(Size _screenSize, double rating) {
       ),
     ],
   );
+}
+
+class ImageOpener extends StatelessWidget {
+  final File? imageFile;
+
+  const ImageOpener({
+    super.key,
+    required this.imageFile,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Center(
+        child: imageFile != null
+            ? PhotoView(
+                imageProvider: FileImage(imageFile!),
+                minScale: PhotoViewComputedScale.contained,
+                maxScale: PhotoViewComputedScale.covered * 2.0,
+              )
+            : Text('No Image Selected'),
+      ),
+    );
+  }
 }
