@@ -1,5 +1,6 @@
 // ignore_for_file: unused_local_variable, prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:amacle_studio_app/global/globals.dart';
 import 'package:amacle_studio_app/pages/bottom_bar_pages/chat.dart';
 import 'package:amacle_studio_app/pages/bottom_bar_pages/home_page.dart';
 import 'package:amacle_studio_app/pages/bottom_bar_pages/project_screen.dart';
@@ -17,11 +18,16 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  Future<void> doit() async {
+    await Global().fetchData();
+  }
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
+    doit();
     return const GetMaterialApp(
       debugShowCheckedModeBanner: false,
       home: HomePage(),
@@ -47,6 +53,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    // Global().fetchData();
     BarIcons icons = BarIcons();
     var size = MediaQuery.of(context).size;
     return SafeArea(

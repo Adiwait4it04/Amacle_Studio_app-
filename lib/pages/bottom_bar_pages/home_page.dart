@@ -7,6 +7,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../global/globals.dart';
 import '../../utils/constant.dart';
 
 class HomePageScreen extends StatefulWidget {
@@ -33,6 +34,12 @@ class _HomePageScreenState extends State<HomePageScreen>
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
     isShowingMainData = true;
+  }
+
+  Future<void> doit() async {
+    Global().saveEmail("2123@");
+    Global().saveLogin("yes");
+    Global().savePhoneNumber("+918577098983");
   }
 
   Column inProgress() {
@@ -126,6 +133,8 @@ class _HomePageScreenState extends State<HomePageScreen>
   }
 
   Column maintainence() {
+    // Global().destroy();
+    // doit();
     return Column(
       children: List.generate(6, (index) {
         return Column(
@@ -222,7 +231,7 @@ class _HomePageScreenState extends State<HomePageScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blue.withOpacity(0.05),
+      backgroundColor: Color(0xFFF3F4F7),
       body: Column(
         children: [
           Container(
@@ -239,21 +248,41 @@ class _HomePageScreenState extends State<HomePageScreen>
                           height: height(context) * 0.45,
                         ),
                         Positioned(
-                          top: 0.04 * width(context),
-                          left: 0.04 * width(context),
-                          child: Icon(
-                            CupertinoIcons.profile_circled,
-                            size: width(context) * 0.17,
-                            color: white,
+                          top: 0.06 * width(context),
+                          left: 0.06 * width(context),
+                          child: CircleAvatar(
+                            maxRadius: width(context) * 0.065,
+                            backgroundColor: Color(0xFFB4DBFF),
+                            // backgroundColor: Colors.transparent,
+                            child: Center(
+                              child: Icon(
+                                Icons.person,
+                                size: width(context) * 0.12,
+                                color: Color(0xFFEAF2FF),
+                              ),
+                            ),
                           ),
                         ),
                         Positioned(
-                          top: 0.04 * width(context),
-                          right: 0.04 * width(context),
-                          child: Icon(
-                            CupertinoIcons.bell_circle,
-                            size: width(context) * 0.19,
-                            color: white,
+                          top: 0.06 * width(context),
+                          right: 0.06 * width(context),
+                          child: CircleAvatar(
+                            maxRadius: width(context) * 0.0667,
+                            backgroundColor: white,
+                            child: Center(
+                              child: CircleAvatar(
+                                maxRadius: width(context) * 0.065,
+                                backgroundColor: themeColor,
+                                child: Center(
+                                  child: Icon(
+                                    CupertinoIcons.bell,
+                                    weight: 0.2,
+                                    size: width(context) * 0.075,
+                                    color: white,
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       ],
@@ -338,12 +367,14 @@ class ExpenseGraphDesign extends StatefulWidget {
 }
 
 class _ExpenseGraphDesignState extends State<ExpenseGraphDesign> {
+  Color graphColors = Color.fromARGB(255, 56, 108, 249);
+
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Container(
         // height: height(context) * 0.36,
-        width: width(context) * 0.90,
+        width: width(context) * 0.95,
         decoration: BoxDecoration(
           color: white,
           // boxShadow: [
@@ -368,9 +399,10 @@ class _ExpenseGraphDesignState extends State<ExpenseGraphDesign> {
                 size: width(context) * 0.06,
                 color: black,
               ),
+              addVerticalSpace(height(context) * 0.035),
               Container(
                 margin: EdgeInsets.only(top: 10),
-                height: height(context) * 0.30,
+                height: height(context) * 0.26,
                 width: width(context) * 0.79,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
@@ -404,19 +436,13 @@ class _ExpenseGraphDesignState extends State<ExpenseGraphDesign> {
                           ],
                           isCurved: true,
                           gradient: LinearGradient(
-                            colors: [
-                              Colors.blue.shade600,
-                              Colors.blue.shade400,
-                            ],
+                            colors: [themeColor, themeColor],
                           ),
                           barWidth: 3,
                           belowBarData: BarAreaData(
                             show: true,
                             gradient: LinearGradient(
-                              colors: [
-                                Colors.blue.shade900,
-                                Colors.blue.shade400,
-                              ],
+                              colors: [themeColor, themeColor],
                             ),
                           ),
                           dotData: FlDotData(show: false),
@@ -424,7 +450,7 @@ class _ExpenseGraphDesignState extends State<ExpenseGraphDesign> {
                       ],
                       gridData: FlGridData(
                           show: true,
-                          drawHorizontalLine: false,
+                          drawHorizontalLine: true,
                           drawVerticalLine: true,
                           getDrawingVerticalLine: (value) {
                             return FlLine(
