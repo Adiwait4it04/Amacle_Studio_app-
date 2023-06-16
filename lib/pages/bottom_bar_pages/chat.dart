@@ -48,7 +48,7 @@ class _ChatsPageState extends State<ChatsPage> {
       child: Scaffold(
         body: Column(
           children: [
-            const Padding(
+            Padding(
               padding: EdgeInsets.only(top: 10),
               child: Center(
                 child: Text(
@@ -56,7 +56,7 @@ class _ChatsPageState extends State<ChatsPage> {
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
-                    fontSize: 30,
+                    fontSize: width(context) * 0.055,
                   ),
                 ),
               ),
@@ -100,25 +100,48 @@ class _ChatsPageState extends State<ChatsPage> {
                           nextScreen(context, Each_Chat());
                         },
                         child: ListView.builder(
-                          itemCount: display_list.length,
-                          itemBuilder: (context, index) => ListTile(
-                            title: Text(
-                              display_list[index].name!,
-                              style: const TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            subtitle: Text(
-                              display_list[index].last_chat!,
-                              style: const TextStyle(color: Colors.black),
-                            ),
-                            leading: const Icon(
-                              CupertinoIcons.profile_circled,
-                              color: Colors.lightBlue,
-                              size: 50,
-                            ),
-                          ),
-                        ),
+                            itemCount: display_list.length,
+                            itemBuilder: (context, index) {
+                              return Column(
+                                children: [
+                                  ListTile(
+                                    title: Text(
+                                      display_list[index].name!,
+                                      style: const TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    subtitle: Text(
+                                      display_list[index].last_chat!,
+                                      style:
+                                          const TextStyle(color: Colors.black),
+                                    ),
+                                    leading: CircleAvatar(
+                                      maxRadius: width(context) * 0.065,
+                                      backgroundColor: Color(0xFFB4DBFF),
+                                      // backgroundColor: Colors.transparent,
+                                      child: Center(
+                                        child: Icon(
+                                          Icons.person,
+                                          size: width(context) * 0.11,
+                                          color: Color(0xFFEAF2FF),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Visibility(
+                                    visible: index != display_list.length - 1,
+                                    child: Container(
+                                      margin: const EdgeInsets.only(
+                                          left: 8, right: 8),
+                                      child: Divider(
+                                        color: Colors.black26,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }),
                       ),
                     ),
             ),

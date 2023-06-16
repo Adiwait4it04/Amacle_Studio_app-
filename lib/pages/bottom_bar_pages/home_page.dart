@@ -407,116 +407,134 @@ class _ExpenseGraphDesignState extends State<ExpenseGraphDesign> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
                 ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: LineChart(
-                    LineChartData(
-                      minX: 0,
-                      maxX: 10,
-                      minY: 0,
-                      maxY: 10,
-                      borderData: FlBorderData(border: Border()),
-                      backgroundColor: Colors.white,
-                      baselineY: 10,
-                      baselineX: 10,
-                      lineBarsData: [
-                        LineChartBarData(
-                          spots: [
-                            const FlSpot(0, 4),
-                            const FlSpot(1, 6),
-                            const FlSpot(2, 8),
-                            const FlSpot(3, 6.2),
-                            const FlSpot(4, 6),
-                            const FlSpot(5, 8),
-                            const FlSpot(6, 9),
-                            const FlSpot(7, 7),
-                            const FlSpot(8, 6),
-                            const FlSpot(9, 7.8),
-                            const FlSpot(10, 8),
-                          ],
-                          isCurved: true,
+                child: LineChart(
+                  LineChartData(
+                    minX: 0,
+                    maxX: 10,
+                    minY: 0,
+                    maxY: 10,
+                    borderData: FlBorderData(border: Border()),
+                    backgroundColor: Colors.white,
+                    baselineY: 10,
+                    baselineX: 10,
+                    lineBarsData: [
+                      LineChartBarData(
+                        spots: [
+                          const FlSpot(0, 4),
+                          const FlSpot(1, 6),
+                          const FlSpot(2, 8),
+                          const FlSpot(3, 6.2),
+                          const FlSpot(4, 6),
+                          const FlSpot(5, 8),
+                          const FlSpot(6, 9),
+                          const FlSpot(7, 7),
+                          const FlSpot(8, 6),
+                          const FlSpot(9, 7.8),
+                          const FlSpot(10, 8),
+                        ],
+                        isCurved: true,
+                        gradient: LinearGradient(
+                          colors: [themeColor, themeColor],
+                        ),
+                        barWidth: 3,
+                        belowBarData: BarAreaData(
+                          show: true,
                           gradient: LinearGradient(
                             colors: [themeColor, themeColor],
                           ),
-                          barWidth: 3,
-                          belowBarData: BarAreaData(
-                            show: true,
-                            gradient: LinearGradient(
-                              colors: [themeColor, themeColor],
-                            ),
-                          ),
-                          dotData: FlDotData(show: false),
                         ),
-                      ],
-                      gridData: FlGridData(
-                          show: true,
-                          drawHorizontalLine: true,
-                          drawVerticalLine: true,
-                          getDrawingVerticalLine: (value) {
-                            return FlLine(
-                              color: Colors.grey.shade800.withOpacity(0.3),
-                              strokeWidth: 0.8,
-                            );
-                          }),
-                      titlesData: FlTitlesData(
-                        leftTitles: AxisTitles(
-                          sideTitles: SideTitles(showTitles: false),
-                        ),
-                        rightTitles: AxisTitles(
-                          sideTitles: SideTitles(showTitles: false),
-                        ),
-                        topTitles: AxisTitles(
-                          sideTitles: SideTitles(showTitles: false),
-                        ),
-                        bottomTitles: AxisTitles(
-                          sideTitles: SideTitles(
-                              showTitles: true,
-                              reservedSize: 12,
-                              getTitlesWidget: (value, meta) {
-                                String text = 'ddddm';
-                                switch (value.toInt()) {
-                                  case 1:
-                                    text = "1";
-                                    break;
-                                  case 2:
-                                    text = "2";
-                                    break;
-                                  case 3:
-                                    text = "3";
-                                    break;
-                                  case 4:
-                                    text = "4";
-                                    break;
-                                  case 5:
-                                    text = "5";
-                                    break;
-                                  case 6:
-                                    text = "6";
-                                    break;
-                                  case 7:
-                                    text = "7";
-                                    break;
-                                  case 8:
-                                    text = "8";
-                                    break;
-                                  case 9:
-                                    text = "9";
-                                    break;
-                                  case 10:
-                                    text = "10";
-                                    break;
-                                  default:
-                                    return Container();
-                                }
-                                return Text(
-                                  text,
-                                  style: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 10,
-                                  ),
-                                );
-                              }),
-                        ),
+                        dotData: FlDotData(show: false),
+                      ),
+                    ],
+                    gridData: FlGridData(
+                      show: true,
+                      drawHorizontalLine: true,
+                      drawVerticalLine: true,
+                      getDrawingVerticalLine: (value) {
+                        if (value == 0 || value == 10) {
+                          return FlLine(
+                            color: Colors.black,
+                            strokeWidth: 0.2,
+                          );
+                        } else {
+                          return FlLine(
+                            strokeWidth: 0.2,
+                            color: Colors.black,
+                          );
+                        }
+                      },
+                      getDrawingHorizontalLine: (value) {
+                        if (value == 0 || value == 10) {
+                          return FlLine(
+                            color: Colors.black,
+                            strokeWidth: 0.2,
+                          );
+                        } else {
+                          return FlLine(
+                            strokeWidth: 0.2,
+                            color: Colors.black,
+                          );
+                        }
+                      },
+                    ),
+                    titlesData: FlTitlesData(
+                      leftTitles: AxisTitles(
+                        sideTitles: SideTitles(showTitles: false),
+                      ),
+                      rightTitles: AxisTitles(
+                        sideTitles: SideTitles(showTitles: false),
+                      ),
+                      topTitles: AxisTitles(
+                        sideTitles: SideTitles(showTitles: false),
+                      ),
+                      bottomTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                            showTitles: true,
+                            reservedSize: 12,
+                            getTitlesWidget: (value, meta) {
+                              String text = 'ddddm';
+                              switch (value.toInt()) {
+                                case 1:
+                                  text = "1";
+                                  break;
+                                case 2:
+                                  text = "2";
+                                  break;
+                                case 3:
+                                  text = "3";
+                                  break;
+                                case 4:
+                                  text = "4";
+                                  break;
+                                case 5:
+                                  text = "5";
+                                  break;
+                                case 6:
+                                  text = "6";
+                                  break;
+                                case 7:
+                                  text = "7";
+                                  break;
+                                case 8:
+                                  text = "8";
+                                  break;
+                                case 9:
+                                  text = "9";
+                                  break;
+                                case 10:
+                                  text = "10";
+                                  break;
+                                default:
+                                  return Container();
+                              }
+                              return Text(
+                                text,
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 10,
+                                ),
+                              );
+                            }),
                       ),
                     ),
                   ),

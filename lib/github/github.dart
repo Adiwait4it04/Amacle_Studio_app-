@@ -1,10 +1,13 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:http/http.dart' as http;
 
 class Github {
   Map<String, dynamic> map = {};
+
+  File? image;
 
   final String personalAccessToken = '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';
   final String username = 'Manvendra-Singh-SMCIC';
@@ -175,7 +178,7 @@ class Github {
     }
   }
 
-  Future<List<dynamic>> fetchIssues(
+  Future<Map<String, dynamic>> fetchIssues(
       String repoOwner, String repoName, String authToken) async {
     String apiUrl = "https://api.github.com/repos/$repoOwner/$repoName/issues";
     String authHeaderValue = "token $authToken";
@@ -186,14 +189,24 @@ class Github {
 
       if (response.statusCode == 200) {
         List<dynamic> issues = jsonDecode(response.body);
-        map = jsonDecode(response.body)[0];
-        print(response.body);
-        return issues;
+        // map = jsonDecode(response.body)[0];
+        // print(response.body);
+        Map<String, dynamic> mapResponse = {
+          "message": "success",
+          "data": response.body,
+        };
+        return mapResponse;
       } else {
-        throw Exception('Failed to fetch issues');
+        Map<String, dynamic> mapResponse = {
+          "message": "failure",
+        };
+        return mapResponse;
       }
     } catch (e) {
-      throw Exception('Failed to connect to the server');
+      Map<String, dynamic> mapResponse = {
+        "message": "failure",
+      };
+      return mapResponse;
     }
   }
 
