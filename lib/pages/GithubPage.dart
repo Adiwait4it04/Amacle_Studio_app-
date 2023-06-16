@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, non_constant_identifier_names, unused_local_variable, unnecessary_const
 
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -110,40 +110,66 @@ class _GithubPageScreenState extends State<GithubPageScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Project Settings'),
+        backgroundColor: const Color(0xFF006FFD),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Center(
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
               TextField(
                 controller: _repositoryNameController,
                 decoration: const InputDecoration(
                   labelText: 'Repository Name',
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        width: 3, color: Color(0xFF006FFD)), //<-- SEE HERE
+                  ),
                 ),
+              ),
+              const SizedBox(
+                height: 16,
               ),
               TextField(
                 controller: _repositoryDescriptionController,
                 decoration: const InputDecoration(
                   labelText: 'Repository Description',
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        width: 3, color: Color(0xFF006FFD)), //<-- SEE HERE
+                  ),
                 ),
               ),
               const SizedBox(height: 16.0),
-              ElevatedButton(
+              TextButton(
                 onPressed: _createRepository,
-                child: const Text('Create Repository'),
+                style:
+                    ElevatedButton.styleFrom(primary: const Color(0xFF006FFD)),
+                child: const Text(
+                  'Create Repository',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
               const SizedBox(height: 16.0),
               TextField(
                 controller: _AddCollaboratorController,
                 decoration: const InputDecoration(
-                  labelText: 'Add Collaborator',
+                  labelText: 'Choose Collaborator',
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        width: 3, color: Color(0xFF006FFD)), //<-- SEE HERE
+                  ),
                 ),
               ),
               const SizedBox(height: 16.0),
-              ElevatedButton(
+              TextButton(
                 onPressed: addCollaborator,
-                child: const Text('Add Collaborator'),
+                style:
+                    ElevatedButton.styleFrom(primary: const Color(0xFF006FFD)),
+                child: const Text(
+                  'Add Collaborator',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ],
           ),
