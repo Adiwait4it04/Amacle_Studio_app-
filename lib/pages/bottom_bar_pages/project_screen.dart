@@ -218,7 +218,7 @@ class _ProjectScreenState extends State<ProjectScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => Githubpage(),
+                                  builder: (context) => GithubPageScreen(),
                                 ),
                               );
                             },
