@@ -16,6 +16,10 @@ class _GithubPageScreenState extends State<GithubPageScreen> {
       TextEditingController();
   final TextEditingController _AddCollaboratorController =
       TextEditingController();
+  String selectedOption = "";
+
+  List<String> items = ['None', 'Adiwait4it04', 'Manvendra-Singh-SMCIC'];
+  String dropdownValue = 'None';
 
   Future<void> addCollaborator() async {
     const String username = 'Adiwait4it04';
@@ -24,7 +28,7 @@ class _GithubPageScreenState extends State<GithubPageScreen> {
     String collab = _AddCollaboratorController.text;
 
     String apiUrl =
-        "https://api.github.com/repos/$username/$repoName/collaborators/$collab";
+        "https://api.github.com/repos/$username/$repoName/collaborators/$dropdownValue";
     String authHeaderValue = "token $token";
 
     try {
@@ -151,15 +155,33 @@ class _GithubPageScreenState extends State<GithubPageScreen> {
                 ),
               ),
               const SizedBox(height: 16.0),
-              TextField(
-                controller: _AddCollaboratorController,
+              // TextField(
+              //   controller: _AddCollaboratorController,
+              //   decoration: const InputDecoration(
+              //     labelText: 'Choose Collaborator',
+              //     enabledBorder: OutlineInputBorder(
+              //       borderSide: BorderSide(
+              //           width: 3, color: Color(0xFF006FFD)), //<-- SEE HERE
+              //     ),
+              //   ),
+              // ),
+              DropdownButtonFormField<String>(
                 decoration: const InputDecoration(
-                  labelText: 'Choose Collaborator',
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(
                         width: 3, color: Color(0xFF006FFD)), //<-- SEE HERE
                   ),
                 ),
+                value: dropdownValue,
+                items: items.map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                      value: value, child: Text(value));
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    dropdownValue = newValue ?? '';
+                  });
+                },
               ),
               const SizedBox(height: 16.0),
               TextButton(
