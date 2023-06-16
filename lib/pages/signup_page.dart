@@ -54,11 +54,16 @@ class _SignupPageState extends State<SignupPage> {
               width: width(context) * 0.87,
               height: width(context) * 0.18,
               child: TextField(
+                onChanged: (value) {
+                  setState(() {});
+                },
                 controller: namecontroller,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Name',
                   hintText: "Name",
-                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                  floatingLabelBehavior: namecontroller.text.isEmpty
+                      ? FloatingLabelBehavior.never
+                      : FloatingLabelBehavior.always,
                   suffixIcon: Icon(Icons.person),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.all(
@@ -75,11 +80,16 @@ class _SignupPageState extends State<SignupPage> {
               width: width(context) * 0.87,
               height: width(context) * 0.18,
               child: TextField(
+                onChanged: (value) {
+                  setState(() {});
+                },
                 controller: emailcontroller,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Email',
                   hintText: "Email",
-                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                  floatingLabelBehavior: emailcontroller.text.isEmpty
+                      ? FloatingLabelBehavior.never
+                      : FloatingLabelBehavior.always,
                   suffixIcon: Icon(Typicons.at),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.all(
@@ -96,11 +106,16 @@ class _SignupPageState extends State<SignupPage> {
               width: width(context) * 0.87,
               height: width(context) * 0.18,
               child: TextField(
+                onChanged: (value) {
+                  setState(() {});
+                },
                 controller: passwordcontroller,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Password',
                   hintText: "Password",
-                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                  floatingLabelBehavior: passwordcontroller.text.isEmpty
+                      ? FloatingLabelBehavior.never
+                      : FloatingLabelBehavior.always,
                   suffixIcon: Icon(Icons.lock),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.all(

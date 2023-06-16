@@ -7,6 +7,7 @@ class Global {
   static String email = "";
   static String role = "";
   static String name = "";
+  static bool isNew = false;
   static int id = -1;
 
   destroy() {
