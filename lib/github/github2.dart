@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class Github {
+class Github2 {
   Map<String, dynamic> map = {};
 
   final String personalAccessToken = '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';
@@ -194,7 +195,8 @@ class Github {
     }
   }
 
-  createRepository(String repoName, String authToken) async {
+  createRepository(
+      String repoName, String authToken, BuildContext context) async {
     String apiUrl = "https://api.github.com/user/repos";
     String authHeaderValue = "token $authToken";
 
@@ -215,7 +217,11 @@ class Github {
 
       if (response.statusCode == 201) {
         print(response.body);
-        print('Succeeded to create repository');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Created a new repository"),
+          ),
+        );
       }
       if (response.statusCode != 201) {
         throw Exception('Failed to create repository');

@@ -2,6 +2,7 @@
 
 import 'dart:math';
 
+import 'package:amacle_studio_app/pages/GithubPage.dart';
 import 'package:amacle_studio_app/utils/app_text.dart';
 import 'package:amacle_studio_app/utils/constant.dart';
 import 'package:amacle_studio_app/utils/styles.dart';
@@ -212,20 +213,30 @@ class _ProjectScreenState extends State<ProjectScreen> {
                       ),
                       child: Column(
                         children: [
-                          Container(
-                            height: height(context) * 0.161,
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: NetworkImage(
-                                  "https://picsum.photos/200/300",
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => GithubPageScreen(),
                                 ),
-                                fit: BoxFit.cover,
+                              );
+                            },
+                            child: Container(
+                              height: height(context) * 0.161,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: NetworkImage(
+                                    "https://picsum.photos/200/300",
+                                  ),
+                                  fit: BoxFit.cover,
+                                ),
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(20),
+                                  topRight: Radius.circular(20),
+                                ),
+                                color: white,
                               ),
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(20),
-                                topRight: Radius.circular(20),
-                              ),
-                              color: white,
                             ),
                           ),
                           Container(
