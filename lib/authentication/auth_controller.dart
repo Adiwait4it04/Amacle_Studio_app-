@@ -39,8 +39,8 @@ class AuthController extends GetxController {
 
   Future<void> register(String email, String password) async {
     try {
-      Global.email = email ?? "";
-      Global().saveEmail(email ?? "");
+      Global.email = email;
+      Global().saveEmail(email);
       await auth.createUserWithEmailAndPassword(
           email: email, password: password);
     } catch (e) {
@@ -57,8 +57,8 @@ class AuthController extends GetxController {
 
   Future<void> login(String email, String password) async {
     try {
-      Global.email = email ?? "";
-      Global().saveEmail(email ?? "");
+      Global.email = email;
+      Global().saveEmail(email);
       await auth.signInWithEmailAndPassword(email: email, password: password);
     } catch (e) {
       Fluttertoast.showToast(
