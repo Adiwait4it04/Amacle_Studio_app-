@@ -1,23 +1,27 @@
+import 'dart:developer';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Global {
   static String phone = "";
   static String email = "";
-  static String role = "developer";
+  static String role = "";
+  static String name = "";
   static int id = -1;
-  static String isLoggedin = "no";
 
   destroy() {
     phone = "";
     email = "";
     id = -1;
-    isLoggedin = "no";
+    role = "";
+    name = "";
 
     removePhoneNumber();
     removeEmail();
-    removeLogin();
+    removeRole();
+    removeName();
 
-    print("destroyed");
+    log("destroyed");
   }
 
   fetchData() {
@@ -29,9 +33,13 @@ class Global {
       print('Email: $email');
       Global.email = email;
     });
-    getLogin().then((log) async {
-      print('Login: $log');
-      Global.isLoggedin = log;
+    getRole().then((rol) async {
+      print('Login: $rol');
+      Global.role = rol;
+    });
+    getName().then((nm) async {
+      print('Name: $nm');
+      Global.name = nm;
     });
   }
 
@@ -66,19 +74,33 @@ class Global {
     await prefs.remove('AmcEmail');
   }
 
-  void saveLogin(String log) async {
+  void saveRole(String log) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('AmcLogin', log);
+    await prefs.setString('AmcRole', log);
   }
 
-  Future<String> getLogin() async {
+  Future<String> getRole() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('AmcLogin') ?? "";
-    ;
+    return prefs.getString('AmcRole') ?? "";
   }
 
-  void removeLogin() async {
+  void removeRole() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.remove('AmcLogin');
+    await prefs.remove('AmcRole');
+  }
+
+  void saveName(String log) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('AmcName', log);
+  }
+
+  Future<String> getName() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('AmcName') ?? "";
+  }
+
+  void removeName() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('AmcName');
   }
 }

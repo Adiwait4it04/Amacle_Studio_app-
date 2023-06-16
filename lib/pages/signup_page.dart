@@ -2,8 +2,13 @@ import 'package:amacle_studio_app/pages/loginpage.dart';
 import 'package:amacle_studio_app/pages/signup_page.dart';
 import 'package:amacle_studio_app/utils/constant.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttericon/typicons_icons.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sign_button/sign_button.dart';
+
+import '../authentication/auth_controller.dart';
+import '../global/globals.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -20,6 +25,7 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -34,154 +40,238 @@ class _SignupPageState extends State<SignupPage> {
               ),
             ),
           ),
+          addVerticalSpace(width(context) * 0.02),
           Padding(
-            padding: const EdgeInsets.only(top: 20, left: 23),
+            padding: const EdgeInsets.only(left: 23),
             child: Text(
               "Please enter your details",
               style: GoogleFonts.poppins(fontSize: 15, color: Colors.black),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(left: 23, top: 30, right: 23),
-            child: TextField(
-              controller: namecontroller,
-              decoration: const InputDecoration(
-                labelText: 'Name',
-                suffixIcon: Icon(Icons.face),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(5),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 23, top: 30, right: 23),
-            child: TextField(
-              controller: emailcontroller,
-              decoration: const InputDecoration(
-                labelText: 'Email',
-                suffixText: '@',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(5),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 23, top: 30, right: 23),
-            child: TextField(
-              controller: passwordcontroller,
-              decoration: const InputDecoration(
-                labelText: 'Password',
-                suffixIcon: Icon(Icons.lock),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(5),
-                  ),
-                ),
-              ),
-              obscureText: true,
-              obscuringCharacter: '*',
-              textAlign: TextAlign.start,
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.only(left: 250, top: 10),
-            child: Text(
-              "Forgot Password",
-              style: TextStyle(
-                color: Color(0xFF355BC0),
-                fontSize: 15,
-              ),
-            ),
-          ),
+          addVerticalSpace(height(context) * 0.03),
           Center(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 10.0),
-              child: TextButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  primary: const Color(0xFF355BC0),
-                ),
-                child: const Padding(
-                  padding:
-                      EdgeInsets.only(left: 150, right: 150, top: 9, bottom: 9),
-                  child: Text(
-                    "Login",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 15,
+            child: SizedBox(
+              width: width(context) * 0.87,
+              height: width(context) * 0.18,
+              child: TextField(
+                controller: namecontroller,
+                decoration: const InputDecoration(
+                  labelText: 'Name',
+                  hintText: "Name",
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                  suffixIcon: Icon(Icons.person),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(5),
                     ),
                   ),
                 ),
               ),
             ),
           ),
+          addVerticalSpace(height(context) * 0.03),
+          Center(
+            child: SizedBox(
+              width: width(context) * 0.87,
+              height: width(context) * 0.18,
+              child: TextField(
+                controller: emailcontroller,
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  hintText: "Email",
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                  suffixIcon: Icon(Typicons.at),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(5),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          addVerticalSpace(height(context) * 0.03),
+          Center(
+            child: SizedBox(
+              width: width(context) * 0.87,
+              height: width(context) * 0.18,
+              child: TextField(
+                controller: passwordcontroller,
+                decoration: const InputDecoration(
+                  labelText: 'Password',
+                  hintText: "Password",
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                  suffixIcon: Icon(Icons.lock),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(5),
+                    ),
+                  ),
+                ),
+                obscureText: true,
+                obscuringCharacter: '*',
+                textAlign: TextAlign.start,
+              ),
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Padding(
+                padding: EdgeInsets.fromLTRB(
+                  0,
+                  width(context) * 0.06,
+                  width(context) * 0.08,
+                  width(context) * 0.05,
+                ),
+                child: Text(
+                  "Forgot Password",
+                  style: TextStyle(
+                    color: themeColor,
+                    fontSize: width(context) * 0.036,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          addVerticalSpace(height(context) * 0.005),
           Center(
             child: Padding(
-              padding: const EdgeInsets.only(top: 15.0),
+              padding: EdgeInsets.only(top: height(context) * 0.01),
+              child: SizedBox(
+                width: width(context) * 0.87,
+                height: width(context) * 0.16,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: TextButton(
+                    onPressed: () {
+                      if (emailcontroller.text.isNotEmpty &&
+                          passwordcontroller.text.isNotEmpty &&
+                          namecontroller.text.isNotEmpty) {
+                        Global().saveName(namecontroller.text.trim());
+                        AuthController.instance.register(
+                            emailcontroller.text.trim(),
+                            passwordcontroller.text.trim());
+                        passwordcontroller.text = "";
+                        emailcontroller.text = "";
+                      } else if (emailcontroller.text.isEmpty &&
+                          passwordcontroller.text.isEmpty &
+                              namecontroller.text.isEmpty) {
+                        Fluttertoast.showToast(
+                          msg: "Please enter the required fields",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          timeInSecForIosWeb: 1,
+                          backgroundColor: Colors.black,
+                          textColor: Colors.white,
+                          fontSize: 16.0,
+                        );
+                      } else if (emailcontroller.text.isEmpty) {
+                        Fluttertoast.showToast(
+                          msg: "Please enter the email",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          timeInSecForIosWeb: 1,
+                        );
+                      } else {
+                        Fluttertoast.showToast(
+                          msg: "Please enter the password",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          timeInSecForIosWeb: 1,
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: themeColor,
+                    ),
+                    child: const Center(
+                      child: Text(
+                        "Create Account",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          addVerticalSpace(width(context) * 0.05),
+          Center(
+            child: Container(
+              height: width(context) * 0.16,
               child: SignInButton(
+                btnText: " Sign in with Google",
                 buttonType: ButtonType.google,
+                btnColor: white,
+                btnTextColor: Colors.black26,
+                elevation: 0,
+                width: width(context) * 0.78,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5),
+                  side: BorderSide(color: Colors.black26),
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 buttonSize: ButtonSize.large,
                 onPressed: () {
-                  print('click');
+                  AuthController.instance.signInWithGoogle();
                 },
               ),
             ),
           ),
+          addVerticalSpace(height(context) * 0.035),
           Padding(
-            padding: const EdgeInsets.only(top: 5),
-            child: Padding(
-              padding: const EdgeInsets.only(left: 15, right: 8, top: 190),
-              child: Row(
-                children: [
-                  Container(
-                    height: 2,
-                    width: 170,
-                    decoration: const BoxDecoration(color: Colors.grey),
+            padding: EdgeInsets.fromLTRB(
+              width(context) * 0.03,
+              0,
+              width(context) * 0.03,
+              0,
+            ),
+            child: Row(
+              children: [
+                Container(
+                  height: 1,
+                  width: width(context) * 0.4,
+                  decoration: const BoxDecoration(color: Colors.black26),
+                ),
+                Text(
+                  "  or  ",
+                  style: TextStyle(
+                    fontSize: width(context) * 0.05,
+                    color: Colors.black26,
+                    fontWeight: FontWeight.bold,
                   ),
-                  const Text(
-                    "  or  ",
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  Container(
-                    height: 2,
-                    width: 150,
-                    decoration: const BoxDecoration(color: Colors.grey),
-                  ),
-                ],
-              ),
+                ),
+                Container(
+                  height: 1,
+                  width: width(context) * 0.4,
+                  decoration: const BoxDecoration(color: Colors.black26),
+                ),
+              ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(left: 10, right: 8),
+          addVerticalSpace(height(context) * 0.02),
+          Center(
             child: Container(
+              width: width(context) * 0.87,
               height: 56,
               decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
                 border: Border.all(
-                  color: const Color(0xFF355BC0),
+                  color: themeColor,
                 ),
               ),
               child: Center(
                 child: TextButton(
                   onPressed: () {
-                    Navigator.pop(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const LoginPage()),
-                    );
+                    replaceScreen(context, LoginPage());
                   },
                   child: const Text(
                     "Login",
                     style: TextStyle(
-                      color: Color(0xFF355BC0),
+                      color: themeColor,
                       fontSize: 15,
                     ),
                   ),

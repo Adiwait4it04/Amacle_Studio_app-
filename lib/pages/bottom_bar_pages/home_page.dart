@@ -1,5 +1,6 @@
 // ignore_for_file: prefer__ructors, prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:amacle_studio_app/authentication/auth_controller.dart';
 import 'package:amacle_studio_app/pages/project_detail_screen.dart';
 import 'package:amacle_studio_app/utils/app_text.dart';
 import 'package:amacle_studio_app/utils/styles.dart';
@@ -34,12 +35,6 @@ class _HomePageScreenState extends State<HomePageScreen>
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
     isShowingMainData = true;
-  }
-
-  Future<void> doit() async {
-    Global().saveEmail("2123@");
-    Global().saveLogin("yes");
-    Global().savePhoneNumber("+918577098983");
   }
 
   Column inProgress() {
@@ -253,15 +248,20 @@ class _HomePageScreenState extends State<HomePageScreen>
                         Positioned(
                           top: 0.06 * width(context),
                           left: 0.06 * width(context),
-                          child: CircleAvatar(
-                            maxRadius: width(context) * 0.065,
-                            backgroundColor: Color(0xFFB4DBFF),
-                            // backgroundColor: Colors.transparent,
-                            child: Center(
-                              child: Icon(
-                                Icons.person,
-                                size: width(context) * 0.12,
-                                color: Color(0xFFEAF2FF),
+                          child: InkWell(
+                            onTap: () {
+                              AuthController.instance.logout();
+                            },
+                            child: CircleAvatar(
+                              maxRadius: width(context) * 0.065,
+                              backgroundColor: Color(0xFFB4DBFF),
+                              // backgroundColor: Colors.transparent,
+                              child: Center(
+                                child: Icon(
+                                  Icons.person,
+                                  size: width(context) * 0.12,
+                                  color: Color(0xFFEAF2FF),
+                                ),
                               ),
                             ),
                           ),
