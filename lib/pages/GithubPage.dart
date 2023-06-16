@@ -155,16 +155,6 @@ class _GithubPageScreenState extends State<GithubPageScreen> {
                 ),
               ),
               const SizedBox(height: 16.0),
-              // TextField(
-              //   controller: _AddCollaboratorController,
-              //   decoration: const InputDecoration(
-              //     labelText: 'Choose Collaborator',
-              //     enabledBorder: OutlineInputBorder(
-              //       borderSide: BorderSide(
-              //           width: 3, color: Color(0xFF006FFD)), //<-- SEE HERE
-              //     ),
-              //   ),
-              // ),
               DropdownButtonFormField<String>(
                 decoration: const InputDecoration(
                   enabledBorder: OutlineInputBorder(
