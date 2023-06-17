@@ -1,6 +1,7 @@
 // ignore_for_file: unused_local_variable, prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:amacle_studio_app/global/globals.dart';
+import 'package:amacle_studio_app/pages/Indivisual_page.dart';
 import 'package:amacle_studio_app/pages/bottom_bar_pages/chat.dart';
 import 'package:amacle_studio_app/pages/bottom_bar_pages/home_page.dart';
 import 'package:amacle_studio_app/pages/bottom_bar_pages/project_screen.dart';

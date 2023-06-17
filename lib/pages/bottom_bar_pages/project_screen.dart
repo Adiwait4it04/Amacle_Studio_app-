@@ -3,6 +3,7 @@
 import 'dart:math';
 
 import 'package:amacle_studio_app/pages/GithubPage.dart';
+import 'package:amacle_studio_app/pages/Indivisual_page.dart';
 import 'package:amacle_studio_app/utils/app_text.dart';
 import 'package:amacle_studio_app/utils/constant.dart';
 import 'package:amacle_studio_app/utils/styles.dart';
@@ -218,7 +219,7 @@ class _ProjectScreenState extends State<ProjectScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => GithubPageScreen(),
+                                  builder: (context) => indivisual_page(),
                                 ),
                               );
                             },
