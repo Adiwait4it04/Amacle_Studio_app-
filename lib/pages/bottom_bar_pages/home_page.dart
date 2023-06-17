@@ -1,9 +1,14 @@
 // ignore_for_file: prefer__ructors, prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'dart:developer';
+
 import 'package:amacle_studio_app/authentication/auth_controller.dart';
 import 'package:amacle_studio_app/pages/project_detail_screen.dart';
 import 'package:amacle_studio_app/utils/app_text.dart';
 import 'package:amacle_studio_app/utils/styles.dart';
+import 'package:amacle_studio_app/utils/widgets.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -37,100 +42,114 @@ class _HomePageScreenState extends State<HomePageScreen>
     isShowingMainData = true;
   }
 
-  Column inProgress() {
+  Column inProgress(List<DocumentSnapshot> docs) {
     int percent = 100;
     return Column(
       children: List.generate(
-        6,
+        docs.length,
         (index) {
-          return Column(
-            children: [
-              addVerticalSpace(height(context) * 0.01),
-              Container(
-                width: 0.9 * width(context),
-                // height: 0.11 * height(context),
-                decoration: BoxDecoration(
-                  color: white,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                padding: EdgeInsets.fromLTRB(8, 4, 1, 3),
-                child: InkWell(
-                  onTap: () {
-                    nextScreen(context, ProjectDetailScreen());
-                  },
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: width(context) * 0.25,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            addVerticalSpace(height(context) * 0.01),
-                            Container(
-                              height: width(context) * 0.17,
-                              width: width(context) * 0.17,
-                              // maxRadius: width(context) * 0.1,
-                              // backgroundColor: themeColor.withOpacity(0.12),
-                              decoration: BoxDecoration(shape: BoxShape.circle),
-                              child: ClipRRect(
-                                borderRadius:
-                                    BorderRadius.circular(width(context) * 0.1),
-                                child: Image.network(
-                                  "https://picsum.photos/200/300",
-                                  fit: BoxFit.cover,
+          return Builder(builder: (context) {
+            return Visibility(
+              child: Column(
+                children: [
+                  addVerticalSpace(height(context) * 0.01),
+                  Container(
+                    width: 0.9 * width(context),
+                    // height: 0.11 * height(context),
+                    decoration: BoxDecoration(
+                      color: white,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    padding: EdgeInsets.fromLTRB(8, 4, 1, 3),
+                    child: InkWell(
+                      onTap: () {
+                        nextScreen(
+                          context,
+                          ProjectDetailScreen(
+                            repoOwner: docs[index]["repo_owner"],
+                            repoName: docs[index]["repo_name"],
+                            token: docs[index]["token"],
+                            projectId: docs[index]["id"],
+                          ),
+                        );
+                      },
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            width: width(context) * 0.25,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                addVerticalSpace(height(context) * 0.01),
+                                Container(
+                                  height: width(context) * 0.17,
+                                  width: width(context) * 0.17,
+                                  // maxRadius: width(context) * 0.1,
+                                  // backgroundColor: themeColor.withOpacity(0.12),
+                                  decoration:
+                                      BoxDecoration(shape: BoxShape.circle),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(
+                                        width(context) * 0.1),
+                                    child: Image.network(
+                                      docs[index]["image"],
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                          Container(
+                            margin: EdgeInsets.only(top: 5),
+                            width: 1.5,
+                          ),
+                          Container(
+                            padding: EdgeInsets.fromLTRB(
+                              width(context) * 0.02,
+                              width(context) * 0.05,
+                              width(context) * 0.01,
+                              width(context) * 0.02,
+                            ),
+                            width: width(context) * 0.62,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                addHorizontalySpace(width(context) * 0.025),
+                                AppText(
+                                  text: docs[index]["name"],
+                                  color: black,
+                                  size: width(context) * 0.047,
+                                  fontWeight: FontWeight.bold,
                                 ),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(top: 5),
-                        width: 1.5,
-                      ),
-                      Container(
-                        padding: EdgeInsets.fromLTRB(
-                          width(context) * 0.02,
-                          width(context) * 0.05,
-                          width(context) * 0.01,
-                          width(context) * 0.02,
-                        ),
-                        width: width(context) * 0.62,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            addHorizontalySpace(width(context) * 0.025),
-                            AppText(
-                              text: "Poultry App",
-                              color: black,
-                              size: width(context) * 0.047,
-                              fontWeight: FontWeight.bold,
+                                addVerticalSpace(height(context) * 0.01),
+                                AppText(
+                                  text: "${docs[index]["progress"]}%",
+                                  size: width(context) * 0.037,
+                                  color: percent == 100
+                                      ? Colors.blue
+                                      : Colors.black54,
+                                ),
+                              ],
                             ),
-                            addVerticalSpace(height(context) * 0.01),
-                            AppText(
-                              text: "$percent%",
-                              size: width(context) * 0.037,
-                              color:
-                                  percent == 100 ? Colors.blue : Colors.black54,
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                  addVerticalSpace(height(context) * 0.005),
+                ],
               ),
-              addVerticalSpace(height(context) * 0.005),
-            ],
-          );
+            );
+          });
         },
       ),
     );
   }
 
-  Column maintainence() {
+  Column maintainence(List<DocumentSnapshot> doc) {
     // Global().destroy();
     // doit();
     return Column(
@@ -248,22 +267,31 @@ class _HomePageScreenState extends State<HomePageScreen>
                         Positioned(
                           top: 0.06 * width(context),
                           left: 0.06 * width(context),
-                          child: InkWell(
-                            onTap: () {
-                              AuthController.instance.logout();
-                            },
-                            child: CircleAvatar(
-                              maxRadius: width(context) * 0.065,
-                              backgroundColor: Color(0xFFB4DBFF),
-                              // backgroundColor: Colors.transparent,
-                              child: Center(
-                                child: Icon(
-                                  Icons.person,
-                                  size: width(context) * 0.12,
-                                  color: Color(0xFFEAF2FF),
+                          child: Row(
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  AuthController.instance.logout();
+                                },
+                                child: CircleAvatar(
+                                  maxRadius: width(context) * 0.065,
+                                  backgroundColor: Color(0xFFB4DBFF),
+                                  // backgroundColor: Colors.transparent,
+                                  child: Center(
+                                    child: Icon(
+                                      Icons.person,
+                                      size: width(context) * 0.12,
+                                      color: Color(0xFFEAF2FF),
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
+                              addHorizontalySpace(10),
+                              AppText(
+                                text: "Hi ${Global.mainMap[0].data()["name"]}",
+                                size: width(context) * 0.045,
+                              ),
+                            ],
                           ),
                         ),
                         Positioned(
@@ -346,15 +374,32 @@ class _HomePageScreenState extends State<HomePageScreen>
               Tab(text: 'Finished'),
             ],
           ),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                SingleChildScrollView(child: maintainence()),
-                SingleChildScrollView(child: inProgress()),
-                SingleChildScrollView(child: inProgress()),
-              ],
-            ),
+          StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection("projects")
+                .where("developer_id",
+                    arrayContains: Global.mainMap[0].data()["id"])
+                .snapshots(),
+            builder:
+                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (snapshot.hasData) {
+                QuerySnapshot querySnapshot = snapshot.data!;
+                List<DocumentSnapshot> documents = querySnapshot.docs;
+                log(documents.length.toString());
+                return Expanded(
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: [
+                      SingleChildScrollView(child: maintainence(documents)),
+                      SingleChildScrollView(child: inProgress(documents)),
+                      SingleChildScrollView(child: inProgress(documents)),
+                    ],
+                  ),
+                );
+              } else {
+                return loadingState();
+              }
+            },
           ),
         ],
       ),

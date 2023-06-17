@@ -16,7 +16,18 @@ import '../utils/constant.dart';
 import '../utils/styles.dart';
 
 class ProjectDetailScreen extends StatefulWidget {
-  const ProjectDetailScreen({Key? key}) : super(key: key);
+  const ProjectDetailScreen(
+      {Key? key,
+      required this.repoOwner,
+      required this.repoName,
+      required this.token,
+      required this.projectId})
+      : super(key: key);
+
+  final String repoOwner;
+  final String repoName;
+  final String token;
+  final int projectId;
 
   @override
   _ProjectDetailScreenState createState() => _ProjectDetailScreenState();
@@ -205,13 +216,16 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
   Map<String, dynamic> mapResponse = {};
   List list = [];
 
-  final String personalAccessToken = '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';
-  final String username = 'Manvendra-Singh-SMCIC';
-  final String apiUrl = 'https://api.github.com';
-  final String repoName = 'Bubble-Trouble';
+  String personalAccessToken = '';
+  String username = '';
+  String apiUrl = 'https://api.github.com';
+  String repoName = "";
 
   @override
   Widget build(BuildContext context) {
+    repoName = widget.repoName;
+    username = widget.repoOwner;
+    personalAccessToken = widget.token;
     try {
       return Scaffold(
         body: FutureBuilder(
