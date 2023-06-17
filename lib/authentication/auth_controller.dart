@@ -12,6 +12,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../global/globals.dart';
+import '../pages/contact_info.dart';
 
 class AuthController extends GetxController {
   //AuthController instance
@@ -49,7 +50,7 @@ class AuthController extends GetxController {
             ? Profile(edit: false)
             : snapshot.docs.isNotEmpty
                 ? const HomePage()
-                : Profile(edit: false),
+                : ContactInfo(),
       );
     }
   }

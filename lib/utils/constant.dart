@@ -19,6 +19,8 @@ const blue = Color(0xff001241);
 const skinColor = Color.fromRGBO(252, 207, 49, 0.25);
 
 const themeColor = Color(0xff006FFD);
+const btnColor = Color(0xff355BC0);
+const bgColor = Color(0xffF3F4F7);
 const graphColor = Color.fromARGB(255, 31, 90, 253);
 
 // COLOR for GridView Menu

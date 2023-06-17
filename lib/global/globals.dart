@@ -9,6 +9,7 @@ class Global {
   static String name = "";
   static bool isNew = false;
   static int id = -1;
+  static List mainMap = [];
 
   destroy() {
     phone = "";

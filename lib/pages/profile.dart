@@ -1,12 +1,19 @@
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+
 import 'dart:developer';
 import 'dart:io';
 
 import 'package:amacle_studio_app/authentication/auth_controller.dart';
 import 'package:amacle_studio_app/global/globals.dart';
+import 'package:amacle_studio_app/global/profile_data.dart';
 import 'package:amacle_studio_app/pages/bottom_bar_pages/home_page.dart';
+import 'package:amacle_studio_app/utils/app_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttericon/typicons_icons.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -39,7 +46,22 @@ class _ProfileState extends State<Profile> {
     TextEditingController(),
     TextEditingController(),
     TextEditingController(),
+    TextEditingController(),
+    TextEditingController(),
+    TextEditingController(),
+    TextEditingController(),
+    TextEditingController(),
   ];
+
+  List<String> availibilityStatus = ["Full Time", "Part-time", "Freelance"];
+  int selectedStatus = -1;
+
+  List<String> preferedRole = [
+    "Front-end\nDeveloper",
+    "Back-end\nDeveloper",
+    "Full-stack\nDeveloper"
+  ];
+  int selectedRole = -1;
 
   Future<File> convertImageUrlToFile(String imageUrl) async {
     var response = await http.get(Uri.parse(imageUrl));
@@ -58,6 +80,8 @@ class _ProfileState extends State<Profile> {
     var directory = await getTemporaryDirectory();
     return directory.path;
   }
+
+  bool checkBox = false;
 
   DateTime? selectedDate;
   bool isAbove18 = false;
@@ -83,10 +107,6 @@ class _ProfileState extends State<Profile> {
 
   @override
   void initState() {
-    doit() async {
-      image = await convertImageUrlToFile("https://picsum.photos/200/300");
-    }
-
     super.initState();
   }
 
@@ -110,262 +130,652 @@ class _ProfileState extends State<Profile> {
     }
   }
 
-  doit() async {
-    image = await convertImageUrlToFile("https://picsum.photos/200/300");
+  bool check() {
+    bool result = true;
+    for (TextEditingController controller in controllers) {
+      result = result && controller.text.trim().isNotEmpty;
+    }
+    return result && (image != null);
   }
-
-  List<String> titles = ["Name", "Email", "Number", "Date of Birth"];
-
-  List<String> hint = ["Name", "Email", "+91 9398432833", "7 March 1993"];
 
   CollectionReference users = FirebaseFirestore.instance.collection('users');
 
   bool done = false;
   @override
   Widget build(BuildContext context) {
-    controllers[1].text = Global.email;
-    doit() async {
-      image = await convertImageUrlToFile("https://picsum.photos/200/300");
-    }
-
     done = false;
-    doit();
+    // checkBox = false;
     // loading = false;
     // AuthController.instance.logout();
 
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        toolbarHeight: 60,
-        elevation: 0.5,
-        actions: [
-          IconButton(
-            onPressed: () async {
-              setState(() {
-                loading = true;
-              });
-
-              String folderPath = 'images/';
-              String fileName =
-                  DateTime.now().millisecondsSinceEpoch.toString() +
-                      '_' +
-                      image!.path.split('/').last;
-
-              FirebaseStorage storage = FirebaseStorage.instance;
-              Reference ref = storage.ref().child(folderPath + fileName);
-              UploadTask uploadTask = ref.putFile(image!);
-
-              TaskSnapshot storageTaskSnapshot =
-                  await uploadTask.whenComplete(() => null);
-
-              String downloadUrl =
-                  await storageTaskSnapshot.ref.getDownloadURL();
-
-              log(downloadUrl);
-
-              int count = 0;
-
-              QuerySnapshot snaps =
-                  await users.orderBy('id', descending: true).get();
-
-              if (snaps.docs.isNotEmpty) {
-                DocumentSnapshot document = snaps.docs.first;
-                print('Document ID: ${document.id}');
-                count = int.parse(document.id);
-              } else {
-                count = 0;
-                print('No documents found in the collection.');
-              }
-
-              DocumentReference documentRef = users.doc((count + 1).toString());
-              done = true;
-
-              documentRef.set({
-                "id": count + 1,
-                'name': 'John Doe',
-                'age': 30,
-                'phno': "+91${controllers[2].text.trim()}",
-                'email': controllers[1].text.trim(),
-                'role': "developer",
-                "active": "yes",
-                "image": downloadUrl,
-                "dob": controllers[3].text.trim(),
-              }).then((value) {
-                print('Data added successfully!');
-              }).catchError((error) {
-                print('Failed to add data: $error');
-              });
-              // nextScreen(context, HomePage());
-
-              gotoNext(context);
-
-              setState(() {
-                loading = false;
-              });
-            },
-            icon: const Icon(
-              Icons.check,
-              color: black,
-            ),
-          ),
-        ],
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(Icons.arrow_back),
-          color: Colors.black,
-        ),
-        title: Text(
-          widget.edit ? "Edit Profile" : "Create Account",
-          style: const TextStyle(
-              color: Colors.black, fontSize: 24, fontWeight: FontWeight.w500),
-        ),
-        centerTitle: true,
-      ),
-      body: ModalProgressHUD(
-        inAsyncCall: loading,
-        child: Container(
-          color: white,
-          width: width(context),
+    return ModalProgressHUD(
+      inAsyncCall: loading,
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        body: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              addVerticalSpace(15),
-              Center(
-                child: Stack(
-                  children: [
-                    SizedBox(
-                      width: 120,
-                      height: 120,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(60),
-                        child: image == null
-                            ? const Image(
-                                image: NetworkImage(
-                                    "https://picsum.photos/200/300"),
-                                fit: BoxFit.cover,
-                              )
-                            : Image.file(
-                                image!,
-                                fit: BoxFit.cover,
-                              ),
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 46, left: 23),
+                    child: Text(
+                      "Enter your details",
+                      style: GoogleFonts.poppins(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
                       ),
                     ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Stack(
-                        children: [
-                          Container(
-                            width: 36,
-                            height: 36,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(18),
-                              color: black,
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () async {
-                              final pickedFile = await picker.pickImage(
-                                source: ImageSource.gallery,
-                                imageQuality: 80,
-                              );
-
-                              if (pickedFile != null) {
-                                image = File(pickedFile.path);
-                                setState(() {});
-                              } else {
-                                setState(() {});
-                                print("No image selected");
-                              }
-                            },
-                            child: Container(
-                              width: 35,
-                              height: 35,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(17.5),
-                                color: white,
-                              ),
-                              child:
-                                  const Icon(LineAwesomeIcons.alternate_pencil),
-                            ),
-                          ),
-                        ],
+                  ),
+                  addVerticalSpace(width(context) * 0.02),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 23),
+                    child: Text(
+                      "Technical Details",
+                      style: GoogleFonts.poppins(
+                        fontSize: 15,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
                       ),
-                    )
-                  ],
-                ),
+                    ),
+                  ),
+                  addVerticalSpace(height(context) * 0.03),
+                  Center(
+                    child: SizedBox(
+                      width: width(context) * 0.87,
+                      height: width(context) * 0.18,
+                      child: TextFormField(
+                        onChanged: (value) {
+                          setState(() {});
+                        },
+                        keyboardType: TextInputType.number,
+                        maxLength: 10,
+                        controller: controllers[0],
+                        decoration: InputDecoration(
+                          counterText: "",
+                          labelText: 'Experience',
+                          hintText: "Years of Experience",
+                          floatingLabelBehavior: controllers[0].text.isEmpty
+                              ? FloatingLabelBehavior.never
+                              : FloatingLabelBehavior.always,
+                          suffixIcon: Icon(Icons.work_history),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(10),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  addVerticalSpace(height(context) * 0.03),
+                  Center(
+                    child: SizedBox(
+                      width: width(context) * 0.87,
+                      height: width(context) * 0.18,
+                      child: TextField(
+                        onChanged: (value) {
+                          setState(() {});
+                        },
+                        controller: controllers[1],
+                        decoration: InputDecoration(
+                          labelText: 'Education',
+                          hintText: "Education (Degree)",
+                          floatingLabelBehavior: controllers[1].text.isEmpty
+                              ? FloatingLabelBehavior.never
+                              : FloatingLabelBehavior.always,
+                          suffixIcon: Icon(Icons.school),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(10),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  addVerticalSpace(height(context) * 0.01),
+                  addVerticalSpace(width(context) * 0.02),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 23),
+                    child: Text(
+                      "Your Best Project",
+                      style: GoogleFonts.poppins(
+                        fontSize: 15,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  addVerticalSpace(width(context) * 0.021),
+                  Center(
+                    child: SizedBox(
+                      width: width(context) * 0.87,
+                      height: width(context) * 0.18,
+                      child: TextField(
+                        onChanged: (value) {
+                          setState(() {});
+                        },
+                        controller: controllers[2],
+                        decoration: InputDecoration(
+                          labelText: 'Project Name',
+                          hintText: "Project Name",
+                          floatingLabelBehavior: controllers[2].text.isEmpty
+                              ? FloatingLabelBehavior.never
+                              : FloatingLabelBehavior.always,
+                          suffixIcon: Icon(Icons.assignment_outlined),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(10),
+                            ),
+                          ),
+                        ),
+                        // obscureText: true,
+                        // obscuringCharacter: '*',
+                        textAlign: TextAlign.start,
+                      ),
+                    ),
+                  ),
+                  addVerticalSpace(width(context) * 0.04),
+                  Center(
+                    child: SizedBox(
+                      width: width(context) * 0.87,
+                      height: width(context) * 0.18,
+                      child: TextField(
+                        onChanged: (value) {
+                          setState(() {});
+                        },
+                        controller: controllers[3],
+                        decoration: InputDecoration(
+                          labelText: 'Role/Position',
+                          hintText: "Role/Position",
+                          floatingLabelBehavior: controllers[3].text.isEmpty
+                              ? FloatingLabelBehavior.never
+                              : FloatingLabelBehavior.always,
+                          suffixIcon: Icon(Icons.contacts_rounded),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(10),
+                            ),
+                          ),
+                        ),
+                        // obscureText: true,
+                        // obscuringCharacter: '*',
+                        textAlign: TextAlign.start,
+                      ),
+                    ),
+                  ),
+                  addVerticalSpace(width(context) * 0.04),
+                  Center(
+                    child: SizedBox(
+                      width: width(context) * 0.87,
+                      height: width(context) * 0.18,
+                      child: TextField(
+                        onChanged: (value) {
+                          setState(() {});
+                        },
+                        controller: controllers[4],
+                        decoration: InputDecoration(
+                          labelText: 'Description',
+                          hintText: "Description",
+                          floatingLabelBehavior: controllers[4].text.isEmpty
+                              ? FloatingLabelBehavior.never
+                              : FloatingLabelBehavior.always,
+                          suffixIcon: Icon(Icons.more_horiz),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(10),
+                            ),
+                          ),
+                        ),
+                        // obscureText: true,
+                        // obscuringCharacter: '*',
+                        textAlign: TextAlign.start,
+                      ),
+                    ),
+                  ),
+                  addVerticalSpace(width(context) * 0.04),
+                  Center(
+                    child: SizedBox(
+                      width: width(context) * 0.87,
+                      height: width(context) * 0.18,
+                      child: TextField(
+                        onChanged: (value) {
+                          setState(() {});
+                        },
+                        controller: controllers[5],
+                        decoration: InputDecoration(
+                          labelText: 'Technologies Used',
+                          hintText: "Technologies Used",
+                          floatingLabelBehavior: controllers[5].text.isEmpty
+                              ? FloatingLabelBehavior.never
+                              : FloatingLabelBehavior.always,
+                          suffixIcon: Icon(CupertinoIcons.device_laptop),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(10),
+                            ),
+                          ),
+                        ),
+                        // obscureText: true,
+                        // obscuringCharacter: '*',
+                        textAlign: TextAlign.start,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              addVerticalSpace(15),
-              Container(
-                padding: EdgeInsets.only(left: 27, right: 27),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: List.generate(
-                    4,
-                    (i) {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            titles[i],
-                            style: GoogleFonts.lato(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                              fontSize: 17.6,
-                            ),
-                          ),
-                          addVerticalSpace(13),
-                          SizedBox(
-                            width: width(context) * 0.78,
-                            height: 50,
-                            child: TextField(
-                              style: GoogleFonts.lato(
-                                fontWeight: FontWeight.normal,
-                                color: Colors.black,
-                                fontSize: 16,
-                              ),
-                              maxLength: i == 2 ? 10 : 50,
-                              enabled: true,
-                              readOnly: (i == 3) || (i == 1),
-                              controller: controllers[i],
-                              onTap: i != 3
-                                  ? () {}
-                                  : () {
-                                      _selectDate(context);
-                                    },
-                              keyboardType: i == 2
-                                  ? TextInputType.number
-                                  : TextInputType.text,
-                              decoration: InputDecoration(
-                                filled: true,
-                                counterText: '',
-                                hintText: hint[i],
-                                hintStyle: GoogleFonts.lato(
-                                  fontWeight: FontWeight.normal,
-                                  color: grey.withOpacity(0.6),
-                                  fontSize: 16,
-                                ),
-                                fillColor: greyLight.withOpacity(0.5),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  borderSide: const BorderSide(
-                                    color: white,
-                                    width: 1,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          addVerticalSpace(13),
-                        ],
-                      );
-                    },
+              addVerticalSpace(height(context) * 0.01),
+              addVerticalSpace(width(context) * 0.02),
+              Padding(
+                padding: const EdgeInsets.only(left: 23),
+                child: Text(
+                  "Links",
+                  style: GoogleFonts.poppins(
+                    fontSize: 15,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
+              addVerticalSpace(width(context) * 0.04),
+              Center(
+                child: SizedBox(
+                  width: width(context) * 0.87,
+                  height: width(context) * 0.18,
+                  child: TextField(
+                    onChanged: (value) {
+                      setState(() {});
+                    },
+                    controller: controllers[6],
+                    decoration: InputDecoration(
+                      labelText: 'Github',
+                      hintText: "Github",
+                      floatingLabelBehavior: controllers[6].text.isEmpty
+                          ? FloatingLabelBehavior.never
+                          : FloatingLabelBehavior.always,
+                      suffixIcon: Icon(Typicons.github),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(10),
+                        ),
+                      ),
+                    ),
+                    // obscureText: true,
+                    // obscuringCharacter: '*',
+                    textAlign: TextAlign.start,
+                  ),
+                ),
+              ),
+              addVerticalSpace(width(context) * 0.04),
+              Center(
+                child: SizedBox(
+                  width: width(context) * 0.87,
+                  height: width(context) * 0.18,
+                  child: TextField(
+                    onChanged: (value) {
+                      setState(() {});
+                    },
+                    controller: controllers[7],
+                    decoration: InputDecoration(
+                      labelText: 'Portfolio URL',
+                      hintText: "Portfolio URL",
+                      floatingLabelBehavior: controllers[7].text.isEmpty
+                          ? FloatingLabelBehavior.never
+                          : FloatingLabelBehavior.always,
+                      suffixIcon: Icon(Icons.work),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(10),
+                        ),
+                      ),
+                    ),
+                    // obscureText: true,
+                    // obscuringCharacter: '*',
+                    textAlign: TextAlign.start,
+                  ),
+                ),
+              ),
+              addVerticalSpace(width(context) * 0.04),
+              Center(
+                child: Container(
+                  width: width(context) * 0.87,
+                  height: width(context) * 0.558,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: image == null ? Colors.black26 : Colors.blue,
+                      width: 1.8,
+                    ),
+                  ),
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Image.asset("Amacle_Studio_app-/assets/flutter.png"),
+                        InkWell(
+                          onTap: () async {
+                            final pickedFile = await picker.pickImage(
+                              source: ImageSource.gallery,
+                              imageQuality: 80,
+                            );
+
+                            if (pickedFile != null) {
+                              image = File(pickedFile.path);
+                              setState(() {});
+                            } else {
+                              setState(() {});
+                              print("No image selected");
+                            }
+                          },
+                          child: Text(
+                            image == null
+                                ? "Upload Your Resume"
+                                : "Resume Uploaded",
+                            style: TextStyle(
+                              color:
+                                  image == null ? Colors.black26 : themeColor,
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              addVerticalSpace(height(context) * 0.01),
+              addVerticalSpace(width(context) * 0.02),
+              Padding(
+                padding: const EdgeInsets.only(left: 23),
+                child: Text(
+                  "Availibility Status",
+                  style: GoogleFonts.poppins(
+                    fontSize: 15,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              addVerticalSpace(width(context) * 0.04),
+              Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(availibilityStatus.length, (index) {
+                    return InkWell(
+                      onTap: () {
+                        setState(() {
+                          selectedStatus = index;
+                        });
+                      },
+                      child: Container(
+                        margin: EdgeInsets.fromLTRB(
+                            width(context) * 0.01, 0, width(context) * 0.01, 0),
+                        height: width(context) * 0.15,
+                        width: width(context) * 0.3,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: selectedStatus == index
+                              ? btnColor
+                              : Colors.black26,
+                        ),
+                        child: Center(
+                          child: AppText(
+                            text: availibilityStatus[index],
+                            size: 14,
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+              ),
+              addVerticalSpace(height(context) * 0.03),
+              Padding(
+                padding: const EdgeInsets.only(left: 23),
+                child: Text(
+                  "Preferred Role",
+                  style: GoogleFonts.poppins(
+                    fontSize: 15,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              addVerticalSpace(width(context) * 0.04),
+              Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(preferedRole.length, (index) {
+                    return InkWell(
+                      onTap: () {
+                        setState(() {
+                          selectedRole = index;
+                        });
+                      },
+                      child: Container(
+                        margin: EdgeInsets.fromLTRB(
+                            width(context) * 0.01, 0, width(context) * 0.01, 0),
+                        height: width(context) * 0.15,
+                        width: width(context) * 0.3,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color:
+                              selectedRole == index ? btnColor : Colors.black26,
+                        ),
+                        child: Center(
+                          child: AppText(
+                            text: preferedRole[index],
+                            size: 14,
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+              ),
+              addVerticalSpace(height(context) * 0.03),
+              Padding(
+                padding: const EdgeInsets.only(left: 23),
+                child: Text(
+                  "Additional Skills",
+                  style: GoogleFonts.poppins(
+                    fontSize: 15,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              addVerticalSpace(height(context) * 0.03),
+              Center(
+                child: SizedBox(
+                  width: width(context) * 0.87,
+                  height: width(context) * 0.18,
+                  child: TextField(
+                    onChanged: (value) {
+                      setState(() {});
+                    },
+                    controller: controllers[8],
+                    decoration: InputDecoration(
+                      labelText: 'Additional Skills',
+                      hintText: "Non-technical skills (hobbies)",
+                      floatingLabelBehavior: controllers[8].text.isEmpty
+                          ? FloatingLabelBehavior.never
+                          : FloatingLabelBehavior.always,
+                      // suffixIcon: Icon(CupertinoIcons.device_laptop),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(10),
+                        ),
+                      ),
+                    ),
+                    // obscureText: true,
+                    // obscuringCharacter: '*',
+                    textAlign: TextAlign.start,
+                  ),
+                ),
+              ),
+              addVerticalSpace(height(context) * 0.03),
+              Visibility(
+                visible: !widget.edit,
+                child: Center(
+                    child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          checkBox = !checkBox;
+                        });
+                      },
+                      child: Icon(
+                        Icons.check_box_outlined,
+                        color: checkBox ? btnColor : Colors.black26,
+                      ),
+                    ),
+                    addHorizontalySpace(20),
+                    AppText(
+                      text:
+                          "I solemnly confirm that all the provided \ndetails are authentic and verifiable.",
+                      color: Colors.black54,
+                      size: width(context) * 0.038,
+                    )
+                  ],
+                )),
+              ),
+              addVerticalSpace(height(context) * 0.03),
+              Center(
+                child: Padding(
+                  padding: EdgeInsets.only(top: height(context) * 0.009),
+                  child: SizedBox(
+                    width: width(context) * 0.87,
+                    height: width(context) * 0.16,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: TextButton(
+                        onPressed: () async {
+                          if (check() &&
+                              (selectedRole != -1) &&
+                              (selectedStatus != -1)) {
+                            if (checkBox) {
+                              setState(() {
+                                loading = true;
+                              });
+
+                              String folderPath = 'images/';
+                              String fileName = DateTime.now()
+                                      .millisecondsSinceEpoch
+                                      .toString() +
+                                  '_' +
+                                  image!.path.split('/').last;
+
+                              FirebaseStorage storage =
+                                  FirebaseStorage.instance;
+                              Reference ref =
+                                  storage.ref().child(folderPath + fileName);
+                              UploadTask uploadTask = ref.putFile(image!);
+
+                              TaskSnapshot storageTaskSnapshot =
+                                  await uploadTask.whenComplete(() => null);
+
+                              String downloadUrl = await storageTaskSnapshot.ref
+                                  .getDownloadURL();
+
+                              log(downloadUrl);
+
+                              int count = 0;
+
+                              QuerySnapshot snaps = await users
+                                  .orderBy('id', descending: true)
+                                  .get();
+
+                              if (snaps.docs.isNotEmpty) {
+                                DocumentSnapshot document = snaps.docs.first;
+                                print('Document ID: ${document.id}');
+                                count = int.parse(document.id);
+                              } else {
+                                count = 0;
+                                print('No documents found in the collection.');
+                              }
+
+                              DocumentReference documentRef =
+                                  users.doc((count + 1).toString());
+                              done = true;
+
+                              documentRef.set({
+                                "id": count + 1,
+                                'name': ProfileData.name,
+                                'role': "developer",
+                                'phno': "+91${ProfileData.phno.trim()}",
+                                'email': Global.email.trim(),
+                                "active": "yes",
+                                'linkedin': ProfileData.linkedin,
+                                'city': ProfileData.city,
+                                'state': ProfileData.state,
+                                'experience': controllers[0].text.trim(),
+                                'education': controllers[1].text.trim(),
+                                'project_name': controllers[2].text.trim(),
+                                'position': controllers[3].text.trim(),
+                                'desc': controllers[4].text.trim(),
+                                'tech_used': controllers[5].text.trim(),
+                                'github': controllers[6].text.trim(),
+                                'portfolio': controllers[7].text.trim(),
+                                'hobbies': controllers[8].text.trim(),
+                                "resume": downloadUrl,
+                                "availibility":
+                                    availibilityStatus[selectedStatus],
+                                "pref_role": availibilityStatus[selectedRole],
+                              }).then((value) {
+                                print('Data added successfully!');
+                              }).catchError((error) {
+                                print('Failed to add data: $error');
+                              });
+                              nextScreen(context, HomePage());
+
+                              gotoNext(context);
+
+                              setState(() {
+                                loading = false;
+                              });
+                            } else {
+                              Fluttertoast.showToast(
+                                msg:
+                                    "Please confirm to the authenticity of the information",
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 1,
+                              );
+                            }
+                          } else {
+                            Fluttertoast.showToast(
+                              msg: "All fields are required",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              timeInSecForIosWeb: 1,
+                            );
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: btnColor,
+                        ),
+                        child: const Center(
+                          child: Text(
+                            "Submit Details",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              addVerticalSpace(25),
             ],
           ),
         ),

@@ -25,6 +25,7 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: bgColor,
       resizeToAvoidBottomInset: false,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -198,7 +199,7 @@ class _SignupPageState extends State<SignupPage> {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: themeColor,
+                      backgroundColor: btnColor,
                     ),
                     child: const Center(
                       child: Text(

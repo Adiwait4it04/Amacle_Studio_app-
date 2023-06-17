@@ -22,6 +22,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: bgColor,
       resizeToAvoidBottomInset: false,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -111,7 +112,7 @@ class _LoginPageState extends State<LoginPage> {
                   width(context) * 0.05,
                 ),
                 child: Text(
-                  "Forgot Password",
+                  "Forgot Password?",
                   style: TextStyle(
                     color: themeColor,
                     fontSize: width(context) * 0.036,
@@ -166,7 +167,7 @@ class _LoginPageState extends State<LoginPage> {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: themeColor,
+                      backgroundColor: btnColor,
                     ),
                     child: const Center(
                       child: Text(

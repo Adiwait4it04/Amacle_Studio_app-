@@ -6,6 +6,10 @@ import 'package:amacle_studio_app/pages/bottom_bar_pages/chat.dart';
 import 'package:amacle_studio_app/pages/bottom_bar_pages/home_page.dart';
 import 'package:amacle_studio_app/pages/bottom_bar_pages/project_screen.dart';
 import 'package:amacle_studio_app/pages/loginpage.dart';
+import 'package:amacle_studio_app/utils/app_text.dart';
+import 'package:amacle_studio_app/utils/constant.dart';
+import 'package:amacle_studio_app/utils/widgets.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -88,9 +92,38 @@ class _HomePageState extends State<HomePage> {
     var size = MediaQuery.of(context).size;
     return SafeArea(
       child: Scaffold(
-        body: WillPopScope(
-          onWillPop: _onWillPop,
-          child: pages[currentIndex],
+        body: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection("users")
+              .where("email", isEqualTo: Global.email)
+              .snapshots(),
+          builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return WillPopScope(
+                onWillPop: _onWillPop,
+                child: loadingState(),
+              );
+            }
+            if (snapshot.hasData) {
+              List<DocumentSnapshot> documents = snapshot.data!.docs;
+              Global.mainMap = documents;
+              // print(documents[0].data().toString());
+              return WillPopScope(
+                onWillPop: _onWillPop,
+                child: pages[currentIndex],
+              );
+            } else {
+              return WillPopScope(
+                onWillPop: _onWillPop,
+                child: Center(
+                  child: AppText(
+                    text: "An error ocured",
+                    color: black,
+                  ),
+                ),
+              );
+            }
+          },
         ),
         bottomNavigationBar: BottomNavigationBar(
           backgroundColor: Colors.white,
