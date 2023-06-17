@@ -86,8 +86,7 @@ class AuthController extends GetxController {
         textColor: Colors.white,
         fontSize: 16.0,
       );
-    } catch (e) {
-      print("Exception: $e");
+    } on Exception catch (e) {
       Fluttertoast.showToast(
         msg: "Account creation failed",
         toastLength: Toast.LENGTH_LONG,
@@ -96,10 +95,12 @@ class AuthController extends GetxController {
         textColor: Colors.white,
         fontSize: 16.0,
       );
+      print(e);
     }
   }
 
-  Future<void> login(String email, String password) async {
+  Future<void> login(String email, String password,
+      void Function(String errorMessage) errorCallback) async {
     try {
       Global.email = email;
       Global().saveEmail(email);
@@ -114,10 +115,13 @@ class AuthController extends GetxController {
         textColor: Colors.white,
         fontSize: 16.0,
       );
+    } on Exception catch (e) {
+      print(e);
+      errorCallback(e.toString());
     }
   }
 
-  signInWithGoogle() async {
+  signInWithGoogle(void Function(String errorMessage) errorCallback) async {
     try {
       final GoogleSignInAccount? googleSignInAccount =
           await GoogleSignIn(scopes: <String>["email"]).signIn();
@@ -161,8 +165,9 @@ class AuthController extends GetxController {
         textColor: Colors.white,
         fontSize: 16.0,
       );
-    } catch (e) {
-      print("Exception");
+    } on Exception catch (e) {
+      print(e);
+      errorCallback(e.toString());
     }
   }
 

@@ -65,6 +65,7 @@ dependencies:
   firebase_database:
   firebase_auth:
   google_sign_in:
+  intl:
   firebase_storage: ^11.2.3
   flutter_native_image: ^0.0.6+1
   cached_network_image: ^3.2.3

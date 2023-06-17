@@ -1,7 +1,9 @@
 // ignore_for_file: unused_local_variable, prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'dart:developer';
+
 import 'package:amacle_studio_app/global/globals.dart';
-import 'package:amacle_studio_app/pages/Indivisual_page.dart';
+import 'package:amacle_studio_app/pages/individual_project.dart';
 import 'package:amacle_studio_app/pages/bottom_bar_pages/chat.dart';
 import 'package:amacle_studio_app/pages/bottom_bar_pages/home_page.dart';
 import 'package:amacle_studio_app/pages/bottom_bar_pages/project_screen.dart';
@@ -107,7 +109,7 @@ class _HomePageState extends State<HomePage> {
             if (snapshot.hasData) {
               List<DocumentSnapshot> documents = snapshot.data!.docs;
               Global.mainMap = documents;
-              // print(documents[0].data().toString());
+              Global.role = Global.mainMap[0]["role"];
               return WillPopScope(
                 onWillPop: _onWillPop,
                 child: pages[currentIndex],

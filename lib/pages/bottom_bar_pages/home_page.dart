@@ -70,6 +70,7 @@ class _HomePageScreenState extends State<HomePageScreen>
                             repoName: docs[index]["repo_name"],
                             token: docs[index]["token"],
                             projectId: docs[index]["id"],
+                            docs: docs[index],
                           ),
                         );
                       },

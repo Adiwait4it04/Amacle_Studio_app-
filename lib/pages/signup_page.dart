@@ -232,7 +232,7 @@ class _SignupPageState extends State<SignupPage> {
                 ),
                 buttonSize: ButtonSize.large,
                 onPressed: () {
-                  AuthController.instance.signInWithGoogle();
+                  AuthController.instance.signInWithGoogle((val) {});
                 },
               ),
             ),

@@ -1,12 +1,13 @@
 // ignore_for_file: prefer_const_constructors, prefer_final_fields
 
-import 'dart:math';
+import 'dart:developer';
 
 import 'package:amacle_studio_app/pages/GithubPage.dart';
-import 'package:amacle_studio_app/pages/Indivisual_page.dart';
+import 'package:amacle_studio_app/pages/individual_project.dart';
 import 'package:amacle_studio_app/utils/app_text.dart';
 import 'package:amacle_studio_app/utils/constant.dart';
 import 'package:amacle_studio_app/utils/styles.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class ProjectScreen extends StatefulWidget {
@@ -25,10 +26,9 @@ class _ProjectScreenState extends State<ProjectScreen> {
   ];
 
   List<String> _filterOptions = [
-    'Option 1',
-    'Option 2',
-    'Option 3',
-    'Option 4',
+    'Figma',
+    'App',
+    'Web',
   ];
 
   late String _selectedOption;
@@ -196,79 +196,110 @@ class _ProjectScreenState extends State<ProjectScreen> {
                 ],
               ),
               addVerticalSpace(height(context) * 0.018),
-              GridView.count(
-                scrollDirection: Axis.vertical,
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                crossAxisCount: 2,
-                childAspectRatio: (0.4 / 0.47),
-                crossAxisSpacing: 10.0,
-                mainAxisSpacing: 10.0,
-                children: List.generate(
-                  9,
-                  (index) {
-                    return Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: white,
-                      ),
-                      child: Column(
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => indivisual_page(),
-                                ),
-                              );
-                            },
-                            child: Container(
-                              height: height(context) * 0.161,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image: NetworkImage(
-                                    "https://picsum.photos/200/300",
-                                  ),
-                                  fit: BoxFit.cover,
-                                ),
-                                borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(20),
-                                  topRight: Radius.circular(20),
-                                ),
-                                color: white,
-                              ),
-                            ),
-                          ),
-                          Container(
-                            padding: EdgeInsets.only(left: 10, top: 10),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    AppText(
-                                      text: "Hotel App",
-                                      size: width(context) * 0.05,
-                                      color: black,
-                                    ),
-                                    addVerticalSpace(height(context) * 0.001),
-                                    AppText(
-                                      text: "₹6000",
-                                      color: black,
-                                      fontWeight: FontWeight.bold,
-                                    )
-                                  ],
-                                ),
-                              ],
-                            ),
-                          )
-                        ],
+              StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection("new_projects")
+                    .snapshots(),
+                builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (!snapshot.hasData) {
+                    return Center(
+                      child: AppText(
+                        text: "No projects as of now.",
+                        color: Colors.black26,
+                        size: 22,
                       ),
                     );
-                  },
-                ),
+                  }
+                  if (snapshot.hasData) {
+                    List<DocumentSnapshot> documents = snapshot.data!.docs;
+                    return GridView.count(
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      crossAxisCount: 2,
+                      childAspectRatio: (0.4 / 0.47),
+                      crossAxisSpacing: 10.0,
+                      mainAxisSpacing: 10.0,
+                      children: List.generate(
+                        documents.length,
+                        (index) {
+                          return Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: white,
+                            ),
+                            child: Column(
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => IndividualProject(
+                                            doc: documents[index]),
+                                      ),
+                                    );
+                                  },
+                                  child: Container(
+                                    height: height(context) * 0.161,
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        image: NetworkImage(
+                                          documents[index]["image"],
+                                        ),
+                                        fit: BoxFit.cover,
+                                      ),
+                                      borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(20),
+                                        topRight: Radius.circular(20),
+                                      ),
+                                      color: white,
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  padding: EdgeInsets.only(left: 10, top: 10),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          AppText(
+                                            text: documents[index]["name"],
+                                            size: width(context) * 0.05,
+                                            color: black,
+                                          ),
+                                          addVerticalSpace(
+                                              height(context) * 0.001),
+                                          AppText(
+                                            text:
+                                                "₹${documents[index]["price"]}",
+                                            color: black,
+                                            fontWeight: FontWeight.bold,
+                                          )
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  } else {
+                    return Center(
+                      child: AppText(
+                        text: "Some error occured",
+                        color: Colors.black26,
+                        size: 22,
+                      ),
+                    );
+                  }
+                },
               ),
             ],
           ),

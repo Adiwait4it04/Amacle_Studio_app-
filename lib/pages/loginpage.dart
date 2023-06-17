@@ -136,7 +136,8 @@ class _LoginPageState extends State<LoginPage> {
                           passwordcontroller.text.isNotEmpty) {
                         AuthController.instance.login(
                             emailcontroller.text.trim(),
-                            passwordcontroller.text.trim());
+                            passwordcontroller.text.trim(),
+                            (val) {});
                         passwordcontroller.text = "";
                         emailcontroller.text = "";
                       } else if (emailcontroller.text.isEmpty &&
@@ -200,7 +201,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 buttonSize: ButtonSize.large,
                 onPressed: () {
-                  AuthController.instance.signInWithGoogle();
+                  AuthController.instance.signInWithGoogle((val) {});
                 },
               ),
             ),
