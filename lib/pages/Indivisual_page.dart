@@ -84,7 +84,7 @@ class _indivisual_pageState extends State<indivisual_page> {
                       Padding(
                         padding: EdgeInsets.only(right: 10),
                         child: Text(
-                          "Rs. 8000",
+                          "₹8000",
                           style: TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ),
