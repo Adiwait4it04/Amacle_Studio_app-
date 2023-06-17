@@ -1,18 +1,4 @@
 {
-  "indexes": [
-    {
-      "collectionId": "users",
-      "fields": [
-        {
-          "fieldPath": "id",
-          "mode": "ASCENDING"
-        },
-        {
-          "fieldPath": "age",
-          "mode": "DESCENDING"
-        }
-      ]
-    }
-  ],
+  "indexes": [],
   "fieldOverrides": []
 }
