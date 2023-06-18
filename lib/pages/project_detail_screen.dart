@@ -2,21 +2,22 @@
 
 import 'dart:developer';
 import 'dart:io';
-
+import 'dart:math' as math;
 import 'package:amacle_studio_app/utils/app_text.dart';
 import 'package:amacle_studio_app/utils/widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:toast/toast.dart' as toast;
 import '../global/globals.dart';
+import 'package:dotted_border/dotted_border.dart';
 import '../utils/constant.dart';
 import '../utils/styles.dart';
 
@@ -53,6 +54,8 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
   File? image;
 
   late TabController _tabController;
+
+  bool sendInChat = false;
 
   @override
   initState() {
@@ -948,68 +951,176 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
                                                                     context,
                                                                 builder:
                                                                     (context) =>
-                                                                        AlertDialog(
-                                                                  title: Text(
-                                                                      'Submit a to do'),
-                                                                  content:
-                                                                      Column(
-                                                                    mainAxisSize:
-                                                                        MainAxisSize
-                                                                            .min,
-                                                                    children: [],
-                                                                  ),
-                                                                  actions: [
-                                                                    TextButton(
-                                                                      child: Text(
-                                                                          'Cancel'),
-                                                                      onPressed:
-                                                                          () {
-                                                                        Navigator.of(context)
-                                                                            .pop();
-                                                                      },
-                                                                    ),
-                                                                    TextButton(
-                                                                      child: Text(
-                                                                          'Resolve'),
-                                                                      onPressed:
-                                                                          () {
-                                                                        resolveIssue(
-                                                                          username,
-                                                                          repoName,
-                                                                          list[index]["number"]
-                                                                              .toString(),
-                                                                          personalAccessToken,
-                                                                          index,
-                                                                          check,
-                                                                        );
-                                                                        Fluttertoast
-                                                                            .showToast(
-                                                                          msg:
-                                                                              "Todo resolved",
-                                                                          toastLength:
-                                                                              Toast.LENGTH_SHORT,
-                                                                          gravity:
-                                                                              ToastGravity.BOTTOM,
-                                                                          timeInSecForIosWeb:
-                                                                              1,
-                                                                        );
-                                                                        Future.delayed(
-                                                                            Duration(milliseconds: 2000),
-                                                                            () {
-                                                                          setState(
-                                                                              () {
-                                                                            imageList.removeAt(index);
-                                                                          });
-                                                                        });
-                                                                        Navigator.of(context)
-                                                                            .pop();
-                                                                      },
-                                                                    ),
-                                                                  ],
-                                                                  backgroundColor:
-                                                                      Colors
-                                                                          .white,
-                                                                  elevation: 2,
+                                                                        ClipRRect(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              30),
+                                                                  child: StatefulBuilder(
+                                                                      builder:
+                                                                          (context,
+                                                                              setState) {
+                                                                    return AlertDialog(
+                                                                      title:
+                                                                          Row(
+                                                                        children: [
+                                                                          AppText(
+                                                                            text:
+                                                                                'Uploads',
+                                                                            fontWeight:
+                                                                                FontWeight.bold,
+                                                                            color:
+                                                                                black,
+                                                                            size:
+                                                                                width(context) * 0.05,
+                                                                          ),
+                                                                          addHorizontalySpace(
+                                                                              5),
+                                                                          Icon(Icons
+                                                                              .upload_rounded),
+                                                                        ],
+                                                                      ),
+                                                                      content:
+                                                                          Container(
+                                                                        width: width(context) *
+                                                                            0.9,
+                                                                        height: height(context) *
+                                                                            0.30,
+                                                                        child:
+                                                                            Column(
+                                                                          crossAxisAlignment:
+                                                                              CrossAxisAlignment.start,
+                                                                          mainAxisSize:
+                                                                              MainAxisSize.min,
+                                                                          children: [
+                                                                            AppText(
+                                                                              text: "Upload and attach files of this task",
+                                                                              color: Colors.black38,
+                                                                              size: 14,
+                                                                            ),
+                                                                            addVerticalSpace(10),
+                                                                            Center(
+                                                                              child: DottedBorder(
+                                                                                borderType: BorderType.RRect,
+                                                                                radius: Radius.circular(20),
+                                                                                dashPattern: [
+                                                                                  5,
+                                                                                  5
+                                                                                ],
+                                                                                color: Colors.grey,
+                                                                                strokeWidth: 2,
+                                                                                child: Container(
+                                                                                  height: height(context) * 0.20,
+                                                                                  width: width(context) * 0.88,
+                                                                                  decoration: BoxDecoration(
+                                                                                    borderRadius: BorderRadius.circular(20),
+                                                                                  ),
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                            addVerticalSpace(10),
+                                                                            Row(
+                                                                              children: <Widget>[
+                                                                                InkWell(
+                                                                                  onTap: () {
+                                                                                    sendInChat = !sendInChat;
+                                                                                    print(sendInChat);
+                                                                                    setState(() {});
+                                                                                  },
+                                                                                  child: Icon(
+                                                                                    sendInChat ? Icons.check_box : Icons.check_box_outline_blank,
+                                                                                    color: sendInChat ? themeColor : Colors.black26,
+                                                                                  ),
+                                                                                ),
+                                                                                addHorizontalySpace(20),
+                                                                                AppText(
+                                                                                  text: "Share in Chat",
+                                                                                  color: Colors.black54,
+                                                                                ),
+                                                                              ],
+                                                                            )
+                                                                          ],
+                                                                        ),
+                                                                      ),
+                                                                      actions: [
+                                                                        ButtonBar(
+                                                                          alignment:
+                                                                              MainAxisAlignment.spaceEvenly,
+                                                                          children: [
+                                                                            ClipRRect(
+                                                                              child: SizedBox(
+                                                                                width: width(context) * 0.3,
+                                                                                height: width(context) * 0.14,
+                                                                                child: TextButton(
+                                                                                  style: ButtonStyle(
+                                                                                    backgroundColor: MaterialStateProperty.all<Color>(
+                                                                                      Color.fromARGB(255, 159, 207, 246).withOpacity(0.4),
+                                                                                    ),
+                                                                                    foregroundColor: MaterialStateProperty.all<Color>(
+                                                                                      btnColor,
+                                                                                    ),
+                                                                                  ),
+                                                                                  child: AppText(
+                                                                                    text: 'Cancel',
+                                                                                    color: btnColor,
+                                                                                    fontWeight: FontWeight.w500,
+                                                                                    size: 16,
+                                                                                  ),
+                                                                                  onPressed: () {
+                                                                                    Navigator.of(context).pop();
+                                                                                  },
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                            ClipRRect(
+                                                                              borderRadius: BorderRadius.circular(10),
+                                                                              child: SizedBox(
+                                                                                width: width(context) * 0.3,
+                                                                                height: width(context) * 0.14,
+                                                                                child: TextButton(
+                                                                                  style: ButtonStyle(
+                                                                                    backgroundColor: MaterialStateProperty.all<Color>(btnColor),
+                                                                                  ),
+                                                                                  child: AppText(
+                                                                                    text: 'Resolve',
+                                                                                    color: white,
+                                                                                    fontWeight: FontWeight.w400,
+                                                                                  ),
+                                                                                  onPressed: () {
+                                                                                    resolveIssue(
+                                                                                      username,
+                                                                                      repoName,
+                                                                                      list[index]["number"].toString(),
+                                                                                      personalAccessToken,
+                                                                                      index,
+                                                                                      check,
+                                                                                    );
+                                                                                    Fluttertoast.showToast(
+                                                                                      msg: "Todo resolved",
+                                                                                      toastLength: Toast.LENGTH_SHORT,
+                                                                                      gravity: ToastGravity.BOTTOM,
+                                                                                      timeInSecForIosWeb: 1,
+                                                                                    );
+                                                                                    Future.delayed(Duration(milliseconds: 2000), () {
+                                                                                      setState(() {
+                                                                                        imageList.removeAt(index);
+                                                                                      });
+                                                                                    });
+                                                                                    Navigator.of(context).pop();
+                                                                                  },
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                          ],
+                                                                        )
+                                                                      ],
+                                                                      backgroundColor:
+                                                                          Colors
+                                                                              .white,
+                                                                      elevation:
+                                                                          2,
+                                                                    );
+                                                                  }),
                                                                 ),
                                                               );
                                                             },
@@ -1770,5 +1881,115 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
       setState(() {});
       return build(context);
     }
+  }
+}
+
+class DashedRect extends StatelessWidget {
+  final Color color;
+  final double strokeWidth;
+  final double gap;
+
+  DashedRect(
+      {this.color = Colors.black, this.strokeWidth = 1.0, this.gap = 5.0});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Padding(
+        padding: EdgeInsets.all(strokeWidth / 2),
+        child: CustomPaint(
+          painter:
+              DashRectPainter(color: color, strokeWidth: strokeWidth, gap: gap),
+        ),
+      ),
+    );
+  }
+}
+
+class DashRectPainter extends CustomPainter {
+  double strokeWidth;
+  Color color;
+  double gap;
+
+  DashRectPainter(
+      {this.strokeWidth = 5.0, this.color = Colors.red, this.gap = 5.0});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint dashedPaint = Paint()
+      ..color = color
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke;
+
+    double x = size.width;
+    double y = size.height;
+
+    Path _topPath = getDashedPath(
+      a: math.Point(0, 0),
+      b: math.Point(x, 0),
+      gap: gap,
+    );
+
+    Path _rightPath = getDashedPath(
+      a: math.Point(x, 0),
+      b: math.Point(x, y),
+      gap: gap,
+    );
+
+    Path _bottomPath = getDashedPath(
+      a: math.Point(0, y),
+      b: math.Point(x, y),
+      gap: gap,
+    );
+
+    Path _leftPath = getDashedPath(
+      a: math.Point(0, 0),
+      b: math.Point(0.001, y),
+      gap: gap,
+    );
+
+    canvas.drawPath(_topPath, dashedPaint);
+    canvas.drawPath(_rightPath, dashedPaint);
+    canvas.drawPath(_bottomPath, dashedPaint);
+    canvas.drawPath(_leftPath, dashedPaint);
+  }
+
+  Path getDashedPath({
+    required math.Point<double> a,
+    required math.Point<double> b,
+    required gap,
+  }) {
+    Size size = Size(b.x - a.x, b.y - a.y);
+    Path path = Path();
+    path.moveTo(a.x, a.y);
+    bool shouldDraw = true;
+    math.Point currentPoint = math.Point(a.x, a.y);
+
+    num radians = math.atan(size.height / size.width);
+
+    num dx = math.cos(radians) * gap < 0
+        ? math.cos(radians) * gap * -1
+        : math.cos(radians) * gap;
+
+    num dy = math.sin(radians) * gap < 0
+        ? math.sin(radians) * gap * -1
+        : math.sin(radians) * gap;
+
+    while (currentPoint.x <= b.x && currentPoint.y <= b.y) {
+      shouldDraw
+          ? path.lineTo(currentPoint.x.toDouble(), currentPoint.y.toDouble())
+          : path.moveTo(currentPoint.x.toDouble(), currentPoint.y.toDouble());
+      shouldDraw = !shouldDraw;
+      currentPoint = math.Point(
+        currentPoint.x + dx,
+        currentPoint.y + dy,
+      );
+    }
+    return path;
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return true;
   }
 }

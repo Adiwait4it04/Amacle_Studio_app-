@@ -42,7 +42,7 @@ class _HomePageScreenState extends State<HomePageScreen>
     isShowingMainData = true;
   }
 
-  Column inProgress(List<DocumentSnapshot> docs) {
+  Column inProgressAndFinished(List<DocumentSnapshot> docs, bool finished) {
     int percent = 100;
     return Column(
       children: List.generate(
@@ -50,6 +50,9 @@ class _HomePageScreenState extends State<HomePageScreen>
         (index) {
           return Builder(builder: (context) {
             return Visibility(
+              visible: finished
+                  ? docs[index]["status"] == "finished"
+                  : docs[index]["status"] == "active",
               child: Column(
                 children: [
                   addVerticalSpace(height(context) * 0.01),
@@ -63,16 +66,18 @@ class _HomePageScreenState extends State<HomePageScreen>
                     padding: EdgeInsets.fromLTRB(8, 4, 1, 3),
                     child: InkWell(
                       onTap: () {
-                        nextScreen(
-                          context,
-                          ProjectDetailScreen(
-                            repoOwner: docs[index]["repo_owner"],
-                            repoName: docs[index]["repo_name"],
-                            token: docs[index]["token"],
-                            projectId: docs[index]["id"],
-                            docs: docs[index],
-                          ),
-                        );
+                        if (!finished) {
+                          nextScreen(
+                            context,
+                            ProjectDetailScreen(
+                              repoOwner: docs[index]["repo_owner"],
+                              repoName: docs[index]["repo_name"],
+                              token: docs[index]["token"],
+                              projectId: docs[index]["id"],
+                              docs: docs[index],
+                            ),
+                          );
+                        }
                       },
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -392,8 +397,10 @@ class _HomePageScreenState extends State<HomePageScreen>
                     controller: _tabController,
                     children: [
                       SingleChildScrollView(child: maintainence(documents)),
-                      SingleChildScrollView(child: inProgress(documents)),
-                      SingleChildScrollView(child: inProgress(documents)),
+                      SingleChildScrollView(
+                          child: inProgressAndFinished(documents, false)),
+                      SingleChildScrollView(
+                          child: inProgressAndFinished(documents, true)),
                     ],
                   ),
                 );
