@@ -2,6 +2,7 @@
 
 import 'dart:developer';
 
+import 'package:amacle_studio_app/utils/app_text.dart';
 import 'package:amacle_studio_app/utils/constant.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -208,14 +209,14 @@ class _IndividualProjectState extends State<IndividualProject> {
                       ),
                       Spacer(),
                       Visibility(
-                        visible: false,
+                        visible: true,
                         child: Icon(
                           Icons.timer,
                           color: Color(0xFF8A8B8C),
                         ),
                       ),
                       Visibility(
-                        visible: false,
+                        visible: true,
                         child: Padding(
                           padding: EdgeInsets.only(right: 10.0),
                           child: Text(
@@ -243,11 +244,11 @@ class _IndividualProjectState extends State<IndividualProject> {
                       ),
                       const Spacer(),
                       Visibility(
-                        visible: false,
+                        visible: true,
                         child: Padding(
                           padding: const EdgeInsets.only(right: 10.0),
                           child: Text(
-                            "22 June,2023",
+                            widget.doc["deadline"],
                             style: GoogleFonts.poppins(
                                 fontSize: 15,
                                 color: const Color(0xFF212222),

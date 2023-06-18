@@ -47,7 +47,7 @@ class AuthController extends GetxController {
           await users.where('email', isEqualTo: Global.email).get();
       Get.offAll(
         () => Global.isNew
-            ? Profile(edit: false)
+            ? ContactInfo()
             : snapshot.docs.isNotEmpty
                 ? const HomePage()
                 : ContactInfo(),

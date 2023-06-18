@@ -3,7 +3,7 @@
 import 'dart:developer';
 
 import 'package:amacle_studio_app/global/globals.dart';
-import 'package:amacle_studio_app/pages/individual_project.dart';
+import 'package:amacle_studio_app/pages/bottom_bar_pages/manager_project_screen.dart';
 import 'package:amacle_studio_app/pages/bottom_bar_pages/chat.dart';
 import 'package:amacle_studio_app/pages/bottom_bar_pages/home_page.dart';
 import 'package:amacle_studio_app/pages/bottom_bar_pages/project_screen.dart';
@@ -67,7 +67,7 @@ class _HomePageState extends State<HomePage> {
   List pages = [
     HomePageScreen(),
     ChatsPage(),
-    ProjectScreen(),
+    dontKnowPage(),
   ];
 
   DateTime? currentBackPressTime;
@@ -170,5 +170,26 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+}
+
+class dontKnowPage extends StatefulWidget {
+  const dontKnowPage({Key? key}) : super(key: key);
+
+  @override
+  _dontKnowPageState createState() => _dontKnowPageState();
+}
+
+class _dontKnowPageState extends State<dontKnowPage> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Global.role == "developer"
+        ? ProjectScreen()
+        : ManagerProjectScreen();
   }
 }

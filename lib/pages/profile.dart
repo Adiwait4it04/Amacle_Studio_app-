@@ -51,6 +51,7 @@ class _ProfileState extends State<Profile> {
     TextEditingController(),
     TextEditingController(),
     TextEditingController(),
+    TextEditingController(),
   ];
 
   List<String> availibilityStatus = ["Full Time", "Part-time", "Freelance"];
@@ -229,6 +230,33 @@ class _ProfileState extends State<Profile> {
                               ? FloatingLabelBehavior.never
                               : FloatingLabelBehavior.always,
                           suffixIcon: Icon(Icons.school),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(10),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  addVerticalSpace(height(context) * 0.03),
+                  Center(
+                    child: SizedBox(
+                      width: width(context) * 0.87,
+                      height: width(context) * 0.38,
+                      child: TextField(
+                        onChanged: (value) {
+                          setState(() {});
+                        },
+                        maxLines: 5,
+                        controller: controllers[9],
+                        decoration: InputDecoration(
+                          labelText: 'Bio',
+                          hintText: "Bio",
+                          floatingLabelBehavior: controllers[9].text.isEmpty
+                              ? FloatingLabelBehavior.never
+                              : FloatingLabelBehavior.always,
+                          suffixIcon: Icon(Icons.info),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.all(
                               Radius.circular(10),
@@ -456,7 +484,30 @@ class _ProfileState extends State<Profile> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // Image.asset("Amacle_Studio_app-/assets/flutter.png"),
+                        InkWell(
+                          onTap: () async {
+                            final pickedFile = await picker.pickImage(
+                              source: ImageSource.gallery,
+                              imageQuality: 80,
+                            );
+
+                            if (pickedFile != null) {
+                              image = File(pickedFile.path);
+                              setState(() {});
+                            } else {
+                              setState(() {});
+                              print("No image selected");
+                            }
+                          },
+                          child: SizedBox(
+                              height: 60,
+                              width: 60,
+                              child: Image.asset(
+                                "assets/upload2.png",
+                                fit: BoxFit.cover,
+                              )),
+                        ),
+                        addVerticalSpace(10),
                         InkWell(
                           onTap: () async {
                             final pickedFile = await picker.pickImage(
@@ -705,14 +756,17 @@ class _ProfileState extends State<Profile> {
                                   users.doc((count + 1).toString());
                               done = true;
 
-                              documentRef.set({
+                              await documentRef.set({
                                 "id": count + 1,
+                                "bio":
+                                    "As a Figma designer, I bring ideas to life by crafting visually stunning and interactive designs. I possess a keen eye for aesthetics, typography, and color theory, ensuring that every design element aligns with the brand's identity and user preferences. By utilizing Figma's powerful design tools and collaborative features, I create pixel-perfect mockups, wireframes, and prototypes that effectively communicate design concepts. I am adept at creating intuitive user interfaces, designing captivating illustrations, and optimizing designs for various devices and screen sizes, delivering exceptional user experiences.",
                                 'name': ProfileData.name,
                                 'role': "developer",
                                 'phno': "+91${ProfileData.phno.trim()}",
                                 'email': Global.email.trim(),
                                 "active": "yes",
                                 'linkedin': ProfileData.linkedin,
+                                // 'linkedin': "in/manvendra-singh-08a233222",
                                 'city': ProfileData.city,
                                 'state': ProfileData.state,
                                 'experience': controllers[0].text.trim(),
@@ -722,6 +776,7 @@ class _ProfileState extends State<Profile> {
                                 'desc': controllers[4].text.trim(),
                                 'tech_used': controllers[5].text.trim(),
                                 'github': controllers[6].text.trim(),
+                                // 'github': "https://github.com/SujaanArora09",
                                 'portfolio': controllers[7].text.trim(),
                                 'hobbies': controllers[8].text.trim(),
                                 "resume": downloadUrl,

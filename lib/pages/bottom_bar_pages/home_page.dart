@@ -15,6 +15,7 @@ import 'package:flutter/material.dart';
 
 import '../../global/globals.dart';
 import '../../utils/constant.dart';
+import '../profile.dart';
 
 class HomePageScreen extends StatefulWidget {
   HomePageScreen({Key? key}) : super(key: key);
@@ -44,6 +45,7 @@ class _HomePageScreenState extends State<HomePageScreen>
 
   Column inProgressAndFinished(List<DocumentSnapshot> docs, bool finished) {
     int percent = 100;
+
     return Column(
       children: List.generate(
         docs.length,
@@ -311,11 +313,16 @@ class _HomePageScreenState extends State<HomePageScreen>
                                 maxRadius: width(context) * 0.065,
                                 backgroundColor: themeColor,
                                 child: Center(
-                                  child: Icon(
-                                    CupertinoIcons.bell,
-                                    weight: 0.2,
-                                    size: width(context) * 0.075,
-                                    color: white,
+                                  child: IconButton(
+                                    onPressed: () {
+                                      nextScreen(context, Profile(edit: false));
+                                    },
+                                    icon: Icon(
+                                      CupertinoIcons.bell,
+                                      weight: 0.2,
+                                      size: width(context) * 0.075,
+                                      color: white,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -381,11 +388,17 @@ class _HomePageScreenState extends State<HomePageScreen>
             ],
           ),
           StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection("projects")
-                .where("developer_id",
-                    arrayContains: Global.mainMap[0].data()["id"])
-                .snapshots(),
+            stream: (Global.mainMap[0].data()["role"] == "developer")
+                ? FirebaseFirestore.instance
+                    .collection("projects")
+                    .where("developer_id",
+                        arrayContains: Global.mainMap[0].data()["id"])
+                    .snapshots()
+                : FirebaseFirestore.instance
+                    .collection("projects")
+                    .where("manager_id",
+                        isEqualTo: Global.mainMap[0].data()["id"])
+                    .snapshots(),
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (snapshot.hasData) {
