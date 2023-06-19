@@ -16,6 +16,7 @@ import 'package:flutter/material.dart';
 import '../../global/globals.dart';
 import '../../utils/constant.dart';
 import '../profile.dart';
+import '../../comps/widgets.dart';
 
 class HomePageScreen extends StatefulWidget {
   HomePageScreen({Key? key}) : super(key: key);
@@ -256,6 +257,7 @@ class _HomePageScreenState extends State<HomePageScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // drawer: ChatWidgets.drawer(context),
       backgroundColor: Color(0xFFF3F4F7),
       body: Column(
         children: [

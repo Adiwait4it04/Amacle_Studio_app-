@@ -110,6 +110,7 @@ class _HomePageState extends State<HomePage> {
               List<DocumentSnapshot> documents = snapshot.data!.docs;
               Global.mainMap = documents;
               Global.role = Global.mainMap[0]["role"];
+              Global.id = Global.mainMap[0]["id"];
               return WillPopScope(
                 onWillPop: _onWillPop,
                 child: pages[currentIndex],
