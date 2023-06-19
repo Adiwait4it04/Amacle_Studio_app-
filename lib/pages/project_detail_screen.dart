@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, dead_code
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, dead_code, use_build_context_synchronously
 
 import 'dart:developer';
 import 'dart:io';
@@ -13,6 +13,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -389,7 +390,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
                                           size: width(context) * 0.072,
                                           color: white,
                                         ),
-                                        addHorizontalySpace(8),
+                                        addHorizontalySpace(14),
                                         AppText(
                                           text: "+1000",
                                           size: width(context) * 0.03,
@@ -398,6 +399,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
                                         ),
                                       ],
                                     ),
+                                    addVerticalSpace(7),
                                     RichText(
                                       text: TextSpan(
                                         text: "Deadline: ",
@@ -416,6 +418,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
                                         ],
                                       ),
                                     ),
+                                    addVerticalSpace(10),
                                     RichText(
                                       text: TextSpan(
                                         text: "Expected: ",
@@ -434,7 +437,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
                                         ],
                                       ),
                                     ),
-                                    addVerticalSpace(height(context) * 0.009),
+                                    addVerticalSpace(14),
                                     Container(
                                       width: width(context) * 0.4,
                                       height: 30,
@@ -578,7 +581,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
                       controller: _tabController,
                       tabs: [
                         Tab(text: "To-Do's"),
-                        Tab(text: 'Tasks'),
+                        Tab(text: 'Issues'),
                         Tab(text: 'Solved Tasks'),
                       ],
                     ),
@@ -1950,7 +1953,19 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
                                                             height(context) *
                                                                 0.01),
                                                         InkWell(
-                                                          onTap: () async {},
+                                                          onTap: () async {
+                                                            File task =
+                                                                await convertImageUrlToFile(
+                                                                    documents[
+                                                                            index]
+                                                                        [
+                                                                        "image"]);
+                                                            nextScreen(
+                                                                context,
+                                                                ImageOpener(
+                                                                    imageFile:
+                                                                        task));
+                                                          },
                                                           child: Container(
                                                             width: 60,
                                                             height: 60,
@@ -2036,6 +2051,24 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
       return build(context);
     }
   }
+
+  Future<File> convertImageUrlToFile(String imageUrl) async {
+    var response = await http.get(Uri.parse(imageUrl));
+    var filePath =
+        await _localPath(); // Function to get the local directory path
+    var fileName = imageUrl.split('/').last;
+
+    File file = File('$filePath/$fileName');
+    await file.writeAsBytes(response.bodyBytes);
+
+    return file;
+  }
+}
+
+Future<String> _localPath() async {
+  // Function to get the local directory path
+  var directory = await getTemporaryDirectory();
+  return directory.path;
 }
 
 class DashedRect extends StatelessWidget {
