@@ -41,7 +41,7 @@ dependencies:
   carousel_slider: ^4.2.1
   shared_preferences: ^2.1.2
   get: ^4.6.5
-  permission_handler:
+  permission_handler: ^10.3.0
   path_provider: ^2.0.15
   modal_progress_hud_nsn:
   image_picker: ^0.8.4+4
@@ -74,6 +74,10 @@ dependencies:
   dotted_border:
   firebase_ui_auth:
   uuid: ^3.0.7
+  file_picker: ^5.3.1
+  flutter_sound: ^9.2.13
+  audioplayers: ^4.1.0
+  record_mp3: ^3.0.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
