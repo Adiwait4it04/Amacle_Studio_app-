@@ -114,8 +114,10 @@ class _ChatsPageState extends State<ChatsPage> {
                                   .collection("users")
                                   .where("id",
                                       isNotEqualTo: Global.mainMap[0]["id"])
-                                  .where("role", isEqualTo: "manager")
-                                  .snapshots()
+                                  .where("role", whereIn: [
+                                  "manager",
+                                  "developer"
+                                ]).snapshots()
                               : FirebaseFirestore.instance
                                   .collection("users")
                                   .where("id",
@@ -170,7 +172,7 @@ class _ChatsPageState extends State<ChatsPage> {
                                         ),
                                         Visibility(
                                           visible:
-                                              index != display_list.length - 1,
+                                              index != documents.length - 1,
                                           child: Container(
                                             margin: const EdgeInsets.only(
                                                 left: 8, right: 8),
