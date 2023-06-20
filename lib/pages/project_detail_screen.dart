@@ -274,19 +274,11 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
   }
 
   String addDelayToDateString(String dateString, int delay) {
-    // Define the input date format
     DateFormat inputFormat = DateFormat('dd MMM yyyy');
-
-    // Parse the input date string
     DateTime date = inputFormat.parse(dateString);
-
-    // Add the delay to the date
     DateTime finalDate = date.add(Duration(days: delay));
-
-    // Format the final date to match the desired string format
     DateFormat outputFormat = DateFormat('dd MMM yyyy');
     String finalDateString = outputFormat.format(finalDate);
-
     return finalDateString;
   }
 
@@ -314,7 +306,6 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
               return Center(child: CircularProgressIndicator());
             } else if (true) {
               // log(mapResponse);
-              log(list.length.toString());
               return Container(
                 width: width(context),
                 height: height(context),
@@ -352,7 +343,9 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
                                 child: CircularPercentIndicator(
                                   radius: width(context) * 0.18,
                                   lineWidth: 12,
-                                  percent: progress * 0.01,
+                                  percent: widget.docs["status"] == "maintain"
+                                      ? 1
+                                      : (progress * 0.01),
                                   progressColor: white,
                                   backgroundColor:
                                       Colors.white12.withOpacity(0.25),
@@ -363,7 +356,10 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
                                           MainAxisAlignment.center,
                                       children: [
                                         AppText(
-                                          text: "$progress%",
+                                          text: widget.docs["status"] ==
+                                                  "maintain"
+                                              ? "100%"
+                                              : "$progress%",
                                           size: width(context) * 0.08,
                                           color: white,
                                         ),
@@ -599,129 +595,138 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
                                   children: [
                                     InkWell(
                                       onTap: () async {
-                                        return await showDialog(
-                                          barrierDismissible: false,
-                                          context: context,
-                                          builder: (context) => AlertDialog(
-                                            title: Text('Add a todo'),
-                                            content: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                TextField(
-                                                  controller: title,
-                                                  decoration: InputDecoration(
-                                                      labelText: 'Enter title'),
-                                                ),
-                                                TextField(
-                                                  controller: body,
-                                                  decoration: InputDecoration(
-                                                    labelText: 'Enter content',
+                                        if (Global.role != "manager") {
+                                          return await showDialog(
+                                            barrierDismissible: false,
+                                            context: context,
+                                            builder: (context) => AlertDialog(
+                                              title: Text('Add a todo'),
+                                              content: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  TextField(
+                                                    controller: title,
+                                                    decoration: InputDecoration(
+                                                        labelText:
+                                                            'Enter title'),
                                                   ),
-                                                ),
-                                              ],
-                                            ),
-                                            actions: [
-                                              TextButton(
-                                                child: Text('Cancel'),
-                                                onPressed: () {
-                                                  Navigator.of(context).pop();
-                                                },
+                                                  TextField(
+                                                    controller: body,
+                                                    decoration: InputDecoration(
+                                                      labelText:
+                                                          'Enter content',
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
-                                              TextButton(
-                                                child: Text('Submit'),
-                                                onPressed: () {
-                                                  if (title.text.isNotEmpty &&
-                                                      body.text.isNotEmpty) {
-                                                    createIssue(
-                                                        username,
-                                                        repoName,
-                                                        title.text.trim(),
-                                                        body.text.trim(),
-                                                        personalAccessToken);
-                                                    title.text = "";
-                                                    body.text = "";
-                                                    imageList.insert(0, null);
-                                                    Fluttertoast.showToast(
-                                                      msg: "Todo added",
-                                                      toastLength:
-                                                          Toast.LENGTH_SHORT,
-                                                      gravity:
-                                                          ToastGravity.BOTTOM,
-                                                      timeInSecForIosWeb: 1,
-                                                    );
+                                              actions: [
+                                                TextButton(
+                                                  child: Text('Cancel'),
+                                                  onPressed: () {
                                                     Navigator.of(context).pop();
-                                                  } else if (title
-                                                          .text.isEmpty &&
-                                                      body.text.isEmpty) {
-                                                    Fluttertoast.showToast(
-                                                      msg:
-                                                          "Please enter the required fields",
-                                                      toastLength:
-                                                          Toast.LENGTH_SHORT,
-                                                      gravity:
-                                                          ToastGravity.BOTTOM,
-                                                      timeInSecForIosWeb: 1,
-                                                      backgroundColor: Colors
-                                                          .black, // Set the background color to match your app's theme
-                                                      textColor: Colors
-                                                          .white, // Set the text color to match your app's theme
-                                                      fontSize:
-                                                          16.0, // Set the font size of the toast message
-                                                    );
-                                                  } else if (title
-                                                      .text.isEmpty) {
-                                                    Fluttertoast.showToast(
-                                                      msg:
-                                                          "Please enter the title",
-                                                      toastLength:
-                                                          Toast.LENGTH_SHORT,
-                                                      gravity:
-                                                          ToastGravity.BOTTOM,
-                                                      timeInSecForIosWeb: 1,
-                                                    );
-                                                  } else {
-                                                    Fluttertoast.showToast(
-                                                      msg:
-                                                          "Please enter the content",
-                                                      toastLength:
-                                                          Toast.LENGTH_SHORT,
-                                                      gravity:
-                                                          ToastGravity.BOTTOM,
-                                                      timeInSecForIosWeb: 1,
-                                                    );
-                                                  }
-                                                },
-                                              ),
-                                            ],
-                                            backgroundColor: Colors.white,
-                                            elevation: 2,
-                                          ),
-                                        );
-                                        Future.delayed(
-                                            Duration(milliseconds: 500), () {
-                                          setState(() {});
-                                        });
-                                      },
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(20),
-                                        child: Container(
-                                          height: 40,
-                                          color: btnColor,
-                                          child: Center(
-                                            child: Row(
-                                              children: [
-                                                addHorizontalySpace(10),
-                                                Icon(
-                                                  Icons.add,
-                                                  color: white,
+                                                  },
                                                 ),
-                                                addHorizontalySpace(5),
-                                                AppText(
-                                                  text: "Add New",
-                                                  size: 14,
+                                                TextButton(
+                                                  child: Text('Submit'),
+                                                  onPressed: () {
+                                                    if (title.text.isNotEmpty &&
+                                                        body.text.isNotEmpty) {
+                                                      createIssue(
+                                                          username,
+                                                          repoName,
+                                                          title.text.trim(),
+                                                          body.text.trim(),
+                                                          personalAccessToken);
+                                                      title.text = "";
+                                                      body.text = "";
+                                                      imageList.insert(0, null);
+                                                      Fluttertoast.showToast(
+                                                        msg: "Todo added",
+                                                        toastLength:
+                                                            Toast.LENGTH_SHORT,
+                                                        gravity:
+                                                            ToastGravity.BOTTOM,
+                                                        timeInSecForIosWeb: 1,
+                                                      );
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    } else if (title
+                                                            .text.isEmpty &&
+                                                        body.text.isEmpty) {
+                                                      Fluttertoast.showToast(
+                                                        msg:
+                                                            "Please enter the required fields",
+                                                        toastLength:
+                                                            Toast.LENGTH_SHORT,
+                                                        gravity:
+                                                            ToastGravity.BOTTOM,
+                                                        timeInSecForIosWeb: 1,
+                                                        backgroundColor: Colors
+                                                            .black, // Set the background color to match your app's theme
+                                                        textColor: Colors
+                                                            .white, // Set the text color to match your app's theme
+                                                        fontSize:
+                                                            16.0, // Set the font size of the toast message
+                                                      );
+                                                    } else if (title
+                                                        .text.isEmpty) {
+                                                      Fluttertoast.showToast(
+                                                        msg:
+                                                            "Please enter the title",
+                                                        toastLength:
+                                                            Toast.LENGTH_SHORT,
+                                                        gravity:
+                                                            ToastGravity.BOTTOM,
+                                                        timeInSecForIosWeb: 1,
+                                                      );
+                                                    } else {
+                                                      Fluttertoast.showToast(
+                                                        msg:
+                                                            "Please enter the content",
+                                                        toastLength:
+                                                            Toast.LENGTH_SHORT,
+                                                        gravity:
+                                                            ToastGravity.BOTTOM,
+                                                        timeInSecForIosWeb: 1,
+                                                      );
+                                                    }
+                                                  },
                                                 ),
-                                                addHorizontalySpace(10),
                                               ],
+                                              backgroundColor: Colors.white,
+                                              elevation: 2,
+                                            ),
+                                          );
+                                          Future.delayed(
+                                              Duration(milliseconds: 500), () {
+                                            setState(() {});
+                                          });
+                                        }
+                                      },
+                                      child: Visibility(
+                                        visible: Global.role != "manager",
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          child: Container(
+                                            height: 40,
+                                            color: btnColor,
+                                            child: Center(
+                                              child: Row(
+                                                children: [
+                                                  addHorizontalySpace(10),
+                                                  Icon(
+                                                    Icons.add,
+                                                    color: white,
+                                                  ),
+                                                  addHorizontalySpace(5),
+                                                  AppText(
+                                                    text: "Add New",
+                                                    size: 14,
+                                                  ),
+                                                  addHorizontalySpace(10),
+                                                ],
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -906,260 +911,254 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
                                                               check[index] =
                                                                   !check[index];
                                                               // setState(() {});
-                                                              return await showDialog(
-                                                                barrierDismissible:
-                                                                    false,
-                                                                context:
-                                                                    context,
-                                                                builder:
-                                                                    (context) =>
-                                                                        ClipRRect(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              30),
-                                                                  child: StatefulBuilder(
-                                                                      builder:
-                                                                          (context,
-                                                                              setState) {
-                                                                    return ClipRRect(
-                                                                      borderRadius:
-                                                                          BorderRadius.circular(
-                                                                              30),
-                                                                      child:
-                                                                          AlertDialog(
-                                                                        title:
-                                                                            Row(
-                                                                          children: [
-                                                                            AppText(
-                                                                              text: 'Uploads',
-                                                                              fontWeight: FontWeight.bold,
-                                                                              color: black,
-                                                                              size: width(context) * 0.05,
-                                                                            ),
-                                                                            addHorizontalySpace(5),
-                                                                            Icon(Icons.upload_rounded),
-                                                                          ],
-                                                                        ),
-                                                                        content:
-                                                                            Container(
-                                                                          width:
-                                                                              width(context) * 0.9,
-                                                                          height:
-                                                                              height(context) * 0.32,
-                                                                          child:
-                                                                              Column(
-                                                                            crossAxisAlignment:
-                                                                                CrossAxisAlignment.start,
-                                                                            mainAxisSize:
-                                                                                MainAxisSize.min,
+                                                              if (Global.role !=
+                                                                  "manager") {
+                                                                return await showDialog(
+                                                                  barrierDismissible:
+                                                                      false,
+                                                                  context:
+                                                                      context,
+                                                                  builder:
+                                                                      (context) =>
+                                                                          ClipRRect(
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            30),
+                                                                    child: StatefulBuilder(builder:
+                                                                        (context,
+                                                                            setState) {
+                                                                      return ClipRRect(
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(30),
+                                                                        child:
+                                                                            AlertDialog(
+                                                                          title:
+                                                                              Row(
                                                                             children: [
                                                                               AppText(
-                                                                                text: "Upload and attach files of this task",
-                                                                                color: Colors.black38,
-                                                                                size: 14,
+                                                                                text: 'Uploads',
+                                                                                fontWeight: FontWeight.bold,
+                                                                                color: black,
+                                                                                size: width(context) * 0.05,
                                                                               ),
-                                                                              addVerticalSpace(10),
-                                                                              Center(
-                                                                                child: DottedBorder(
-                                                                                  borderType: BorderType.RRect,
-                                                                                  radius: Radius.circular(20),
-                                                                                  dashPattern: [
-                                                                                    5,
-                                                                                    5
-                                                                                  ],
-                                                                                  color: Colors.grey,
-                                                                                  strokeWidth: 2,
-                                                                                  child: Container(
-                                                                                    height: height(context) * 0.20,
-                                                                                    width: width(context) * 0.88,
-                                                                                    decoration: BoxDecoration(
-                                                                                      borderRadius: BorderRadius.circular(20),
-                                                                                    ),
-                                                                                    child: Column(
-                                                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                                                      children: [
-                                                                                        InkWell(
-                                                                                          onTap: () async {
-                                                                                            final pickedFile = await picker.pickImage(
-                                                                                              source: ImageSource.gallery,
-                                                                                              imageQuality: 80,
-                                                                                            );
-                                                                                            if (pickedFile != null) {
-                                                                                              todoimage = File(pickedFile.path);
-                                                                                              setState(() {});
-                                                                                            } else {
-                                                                                              setState(() {});
-                                                                                              print("No image selected");
-                                                                                            }
-                                                                                          },
-                                                                                          child: SizedBox(
-                                                                                            height: 60,
-                                                                                            width: 60,
-                                                                                            child: Image.asset(
-                                                                                              "assets/upload1.png",
-                                                                                              fit: BoxFit.cover,
-                                                                                            ),
-                                                                                          ),
-                                                                                        ),
-                                                                                        addVerticalSpace(5),
-                                                                                        InkWell(
-                                                                                          onTap: () async {
-                                                                                            final pickedFile = await picker.pickImage(
-                                                                                              source: ImageSource.gallery,
-                                                                                              imageQuality: 80,
-                                                                                            );
-                                                                                            if (pickedFile != null) {
-                                                                                              todoimage = File(pickedFile.path);
-                                                                                              setState(() {});
-                                                                                            } else {
-                                                                                              setState(() {});
-                                                                                              print("No image selected");
-                                                                                            }
-                                                                                          },
-                                                                                          child: Text(
-                                                                                            "Click to upload",
-                                                                                            style: TextStyle(decoration: TextDecoration.underline),
-                                                                                          ),
-                                                                                        ),
-                                                                                        addVerticalSpace(height(context) * 0.01),
-                                                                                        AppText(
-                                                                                          text: "Maximum File Size 50 MB",
-                                                                                          color: Colors.black38,
-                                                                                        )
-                                                                                      ],
-                                                                                    ),
-                                                                                  ),
-                                                                                ),
-                                                                              ),
-                                                                              addVerticalSpace(10),
-                                                                              Row(
-                                                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                                children: [
-                                                                                  Row(
-                                                                                    children: <Widget>[
-                                                                                      InkWell(
-                                                                                        onTap: () {
-                                                                                          sendInChat = !sendInChat;
-                                                                                          print(sendInChat);
-                                                                                          setState(() {});
-                                                                                        },
-                                                                                        child: Icon(
-                                                                                          sendInChat ? Icons.check_box : Icons.check_box_outline_blank,
-                                                                                          color: sendInChat ? themeColor : Colors.black26,
-                                                                                        ),
-                                                                                      ),
-                                                                                      addHorizontalySpace(20),
-                                                                                      AppText(
-                                                                                        text: "Share in Chat",
-                                                                                        color: Colors.black54,
-                                                                                      ),
-                                                                                    ],
-                                                                                  ),
-                                                                                  Visibility(
-                                                                                    visible: todoimage != null,
-                                                                                    child: IconButton(
-                                                                                        icon: Icon(Icons.remove_red_eye),
-                                                                                        color: themeColor,
-                                                                                        onPressed: () {
-                                                                                          if (todoimage != null) {
-                                                                                            nextScreen(context, ImageOpener(imageFile: todoimage));
-                                                                                          }
-                                                                                        }),
-                                                                                  ),
-                                                                                ],
-                                                                              )
+                                                                              addHorizontalySpace(5),
+                                                                              Icon(Icons.upload_rounded),
                                                                             ],
                                                                           ),
-                                                                        ),
-                                                                        actions: [
-                                                                          ButtonBar(
-                                                                            alignment:
-                                                                                MainAxisAlignment.spaceEvenly,
-                                                                            children: [
-                                                                              ClipRRect(
-                                                                                borderRadius: BorderRadius.circular(10),
-                                                                                child: SizedBox(
-                                                                                  width: width(context) * 0.3,
-                                                                                  height: width(context) * 0.14,
-                                                                                  child: TextButton(
-                                                                                    style: ButtonStyle(
-                                                                                      backgroundColor: MaterialStateProperty.all<Color>(
-                                                                                        Color.fromARGB(255, 159, 207, 246).withOpacity(0.4),
+                                                                          content:
+                                                                              Container(
+                                                                            width:
+                                                                                width(context) * 0.9,
+                                                                            height:
+                                                                                height(context) * 0.32,
+                                                                            child:
+                                                                                Column(
+                                                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                                                              mainAxisSize: MainAxisSize.min,
+                                                                              children: [
+                                                                                AppText(
+                                                                                  text: "Upload and attach files of this task",
+                                                                                  color: Colors.black38,
+                                                                                  size: 14,
+                                                                                ),
+                                                                                addVerticalSpace(10),
+                                                                                Center(
+                                                                                  child: DottedBorder(
+                                                                                    borderType: BorderType.RRect,
+                                                                                    radius: Radius.circular(20),
+                                                                                    dashPattern: [5, 5],
+                                                                                    color: Colors.grey,
+                                                                                    strokeWidth: 2,
+                                                                                    child: Container(
+                                                                                      height: height(context) * 0.20,
+                                                                                      width: width(context) * 0.88,
+                                                                                      decoration: BoxDecoration(
+                                                                                        borderRadius: BorderRadius.circular(20),
                                                                                       ),
-                                                                                      foregroundColor: MaterialStateProperty.all<Color>(
-                                                                                        btnColor,
+                                                                                      child: Column(
+                                                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                                                        children: [
+                                                                                          InkWell(
+                                                                                            onTap: () async {
+                                                                                              final pickedFile = await picker.pickImage(
+                                                                                                source: ImageSource.gallery,
+                                                                                                imageQuality: 80,
+                                                                                              );
+                                                                                              if (pickedFile != null) {
+                                                                                                todoimage = File(pickedFile.path);
+                                                                                                setState(() {});
+                                                                                              } else {
+                                                                                                setState(() {});
+                                                                                                print("No image selected");
+                                                                                              }
+                                                                                            },
+                                                                                            child: SizedBox(
+                                                                                              height: 60,
+                                                                                              width: 60,
+                                                                                              child: Image.asset(
+                                                                                                "assets/upload1.png",
+                                                                                                fit: BoxFit.cover,
+                                                                                              ),
+                                                                                            ),
+                                                                                          ),
+                                                                                          addVerticalSpace(5),
+                                                                                          InkWell(
+                                                                                            onTap: () async {
+                                                                                              final pickedFile = await picker.pickImage(
+                                                                                                source: ImageSource.gallery,
+                                                                                                imageQuality: 80,
+                                                                                              );
+                                                                                              if (pickedFile != null) {
+                                                                                                todoimage = File(pickedFile.path);
+                                                                                                setState(() {});
+                                                                                              } else {
+                                                                                                setState(() {});
+                                                                                                print("No image selected");
+                                                                                              }
+                                                                                            },
+                                                                                            child: Text(
+                                                                                              "Click to upload",
+                                                                                              style: TextStyle(decoration: TextDecoration.underline),
+                                                                                            ),
+                                                                                          ),
+                                                                                          addVerticalSpace(height(context) * 0.01),
+                                                                                          AppText(
+                                                                                            text: "Maximum File Size 50 MB",
+                                                                                            color: Colors.black38,
+                                                                                          )
+                                                                                        ],
                                                                                       ),
                                                                                     ),
-                                                                                    child: AppText(
-                                                                                      text: 'Cancel',
-                                                                                      color: btnColor,
-                                                                                      fontWeight: FontWeight.w500,
-                                                                                      size: 16,
-                                                                                    ),
-                                                                                    onPressed: () {
-                                                                                      todoimage = null;
-                                                                                      Navigator.of(context).pop();
-                                                                                    },
                                                                                   ),
                                                                                 ),
-                                                                              ),
-                                                                              ClipRRect(
-                                                                                borderRadius: BorderRadius.circular(10),
-                                                                                child: SizedBox(
-                                                                                  width: width(context) * 0.3,
-                                                                                  height: width(context) * 0.14,
-                                                                                  child: TextButton(
-                                                                                    style: ButtonStyle(
-                                                                                      backgroundColor: MaterialStateProperty.all<Color>(btnColor),
+                                                                                addVerticalSpace(10),
+                                                                                Row(
+                                                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                                  children: [
+                                                                                    Row(
+                                                                                      children: <Widget>[
+                                                                                        InkWell(
+                                                                                          onTap: () {
+                                                                                            sendInChat = !sendInChat;
+                                                                                            print(sendInChat);
+                                                                                            setState(() {});
+                                                                                          },
+                                                                                          child: Icon(
+                                                                                            sendInChat ? Icons.check_box : Icons.check_box_outline_blank,
+                                                                                            color: sendInChat ? themeColor : Colors.black26,
+                                                                                          ),
+                                                                                        ),
+                                                                                        addHorizontalySpace(20),
+                                                                                        AppText(
+                                                                                          text: "Share in Chat",
+                                                                                          color: Colors.black54,
+                                                                                        ),
+                                                                                      ],
                                                                                     ),
-                                                                                    child: AppText(
-                                                                                      text: 'Resolve',
-                                                                                      color: white,
-                                                                                      fontWeight: FontWeight.w400,
+                                                                                    Visibility(
+                                                                                      visible: todoimage != null,
+                                                                                      child: IconButton(
+                                                                                          icon: Icon(Icons.remove_red_eye),
+                                                                                          color: themeColor,
+                                                                                          onPressed: () {
+                                                                                            if (todoimage != null) {
+                                                                                              nextScreen(context, ImageOpener(imageFile: todoimage));
+                                                                                            }
+                                                                                          }),
                                                                                     ),
-                                                                                    onPressed: () {
-                                                                                      if (todoimage != null) {
-                                                                                        resolveIssue(
-                                                                                          username,
-                                                                                          repoName,
-                                                                                          list[index]["number"].toString(),
-                                                                                          personalAccessToken,
-                                                                                          index,
-                                                                                          check,
-                                                                                        );
-                                                                                        Fluttertoast.showToast(
-                                                                                          msg: "Todo resolved",
-                                                                                          toastLength: Toast.LENGTH_SHORT,
-                                                                                          gravity: ToastGravity.BOTTOM,
-                                                                                          timeInSecForIosWeb: 1,
-                                                                                        );
+                                                                                  ],
+                                                                                )
+                                                                              ],
+                                                                            ),
+                                                                          ),
+                                                                          actions: [
+                                                                            ButtonBar(
+                                                                              alignment: MainAxisAlignment.spaceEvenly,
+                                                                              children: [
+                                                                                ClipRRect(
+                                                                                  borderRadius: BorderRadius.circular(10),
+                                                                                  child: SizedBox(
+                                                                                    width: width(context) * 0.3,
+                                                                                    height: width(context) * 0.14,
+                                                                                    child: TextButton(
+                                                                                      style: ButtonStyle(
+                                                                                        backgroundColor: MaterialStateProperty.all<Color>(
+                                                                                          Color.fromARGB(255, 159, 207, 246).withOpacity(0.4),
+                                                                                        ),
+                                                                                        foregroundColor: MaterialStateProperty.all<Color>(
+                                                                                          btnColor,
+                                                                                        ),
+                                                                                      ),
+                                                                                      child: AppText(
+                                                                                        text: 'Cancel',
+                                                                                        color: btnColor,
+                                                                                        fontWeight: FontWeight.w500,
+                                                                                        size: 16,
+                                                                                      ),
+                                                                                      onPressed: () {
+                                                                                        todoimage = null;
                                                                                         Navigator.of(context).pop();
-                                                                                      } else {
-                                                                                        Fluttertoast.showToast(
-                                                                                          msg: "Image is necessary",
-                                                                                          toastLength: Toast.LENGTH_SHORT,
-                                                                                          gravity: ToastGravity.BOTTOM,
-                                                                                          timeInSecForIosWeb: 1,
-                                                                                        );
-                                                                                      }
-                                                                                      todoimage = null;
-                                                                                    },
+                                                                                      },
+                                                                                    ),
                                                                                   ),
                                                                                 ),
-                                                                              ),
-                                                                            ],
-                                                                          )
-                                                                        ],
-                                                                        backgroundColor:
-                                                                            Colors.white,
-                                                                        elevation:
-                                                                            2,
-                                                                      ),
-                                                                    );
-                                                                  }),
-                                                                ),
-                                                              );
+                                                                                ClipRRect(
+                                                                                  borderRadius: BorderRadius.circular(10),
+                                                                                  child: SizedBox(
+                                                                                    width: width(context) * 0.3,
+                                                                                    height: width(context) * 0.14,
+                                                                                    child: TextButton(
+                                                                                      style: ButtonStyle(
+                                                                                        backgroundColor: MaterialStateProperty.all<Color>(btnColor),
+                                                                                      ),
+                                                                                      child: AppText(
+                                                                                        text: 'Resolve',
+                                                                                        color: white,
+                                                                                        fontWeight: FontWeight.w400,
+                                                                                      ),
+                                                                                      onPressed: () {
+                                                                                        if (todoimage != null) {
+                                                                                          resolveIssue(
+                                                                                            username,
+                                                                                            repoName,
+                                                                                            list[index]["number"].toString(),
+                                                                                            personalAccessToken,
+                                                                                            index,
+                                                                                            check,
+                                                                                          );
+                                                                                          Fluttertoast.showToast(
+                                                                                            msg: "Todo resolved",
+                                                                                            toastLength: Toast.LENGTH_SHORT,
+                                                                                            gravity: ToastGravity.BOTTOM,
+                                                                                            timeInSecForIosWeb: 1,
+                                                                                          );
+                                                                                          Navigator.of(context).pop();
+                                                                                        } else {
+                                                                                          Fluttertoast.showToast(
+                                                                                            msg: "Image is necessary",
+                                                                                            toastLength: Toast.LENGTH_SHORT,
+                                                                                            gravity: ToastGravity.BOTTOM,
+                                                                                            timeInSecForIosWeb: 1,
+                                                                                          );
+                                                                                        }
+                                                                                        todoimage = null;
+                                                                                      },
+                                                                                    ),
+                                                                                  ),
+                                                                                ),
+                                                                              ],
+                                                                            )
+                                                                          ],
+                                                                          backgroundColor:
+                                                                              Colors.white,
+                                                                          elevation:
+                                                                              2,
+                                                                        ),
+                                                                      );
+                                                                    }),
+                                                                  ),
+                                                                );
+                                                              }
                                                             },
                                                             child: Container(
                                                               width: 60,
@@ -1251,533 +1250,727 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
                           ),
                           // Child 2
                           SingleChildScrollView(
-                            child: StreamBuilder<QuerySnapshot>(
-                                stream: FirebaseFirestore.instance
-                                    .collection(
-                                        "project_issues/issues/${widget.projectId}")
-                                    .snapshots(),
-                                builder: (BuildContext context,
-                                    AsyncSnapshot<QuerySnapshot> snapshot) {
-                                  doit();
-                                  if (snapshot.hasData) {
-                                    QuerySnapshot querySnapshot =
-                                        snapshot.data!;
-                                    List<DocumentSnapshot> documents =
-                                        querySnapshot.docs;
-                                    print(snapshot.data!.docs.length);
-                                    return Column(
-                                      children: List.generate(
-                                          snapshot.data!.docs.length, (index) {
-                                        Object data = documents[index].data()!;
-                                        return Visibility(
-                                          visible: documents[index]["solved"] ==
-                                              "no",
-                                          child: Column(
-                                            children: [
-                                              addVerticalSpace(
-                                                  height(context) * 0.01),
-                                              Container(
-                                                width: 0.9 * width(context),
-                                                // height: 0.11 * height(context),
-                                                decoration: BoxDecoration(
-                                                  color: white,
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
+                            child: Column(
+                              children: [
+                                addVerticalSpace(15),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    InkWell(
+                                      onTap: () async {
+                                        return await showDialog(
+                                          barrierDismissible: false,
+                                          context: context,
+                                          builder: (context) => AlertDialog(
+                                            title: Text('Add a issue'),
+                                            content: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                TextField(
+                                                  controller: title,
+                                                  decoration: InputDecoration(
+                                                      labelText: 'Enter title'),
                                                 ),
-                                                padding: EdgeInsets.fromLTRB(
-                                                    8, 8, 1, 3),
-                                                child: Row(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Container(
-                                                      width:
-                                                          width(context) * 0.25,
-                                                      child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .center,
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          addVerticalSpace(
-                                                              height(context) *
-                                                                  0.023),
-                                                          AppText(
-                                                            text: documents[
-                                                                    index]
-                                                                ["time_posted"],
-                                                            size:
-                                                                width(context) *
-                                                                    0.04,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            color: themeColor,
-                                                          ),
-                                                          addVerticalSpace(
-                                                              height(context) *
-                                                                  0.01),
-                                                          AppText(
-                                                            text:
-                                                                documents[index]
-                                                                    ["date"],
-                                                            size:
-                                                                width(context) *
-                                                                    0.035,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .normal,
-                                                            color:
-                                                                Colors.black38,
-                                                          ),
-                                                        ],
-                                                      ),
+                                                TextField(
+                                                  controller: body,
+                                                  decoration: InputDecoration(
+                                                    labelText: 'Enter content',
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            actions: [
+                                              TextButton(
+                                                child: Text('Cancel'),
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                              ),
+                                              TextButton(
+                                                child: Text('Submit'),
+                                                onPressed: () async {
+                                                  if (title.text.isNotEmpty &&
+                                                      body.text.isNotEmpty) {
+                                                    CollectionReference users =
+                                                        FirebaseFirestore
+                                                            .instance
+                                                            .collection(
+                                                                "project_issues/issues/${widget.projectId}");
+                                                    QuerySnapshot snaps =
+                                                        await users
+                                                            .orderBy('id',
+                                                                descending:
+                                                                    true)
+                                                            .get();
+
+                                                    int count = 0;
+
+                                                    if (snaps.docs.isNotEmpty) {
+                                                      DocumentSnapshot
+                                                          document =
+                                                          snaps.docs.first;
+                                                      print(
+                                                          'Document ID: ${document.id}');
+                                                      count = int.parse(
+                                                          document.id);
+                                                    } else {
+                                                      count = 0;
+                                                      print(
+                                                          'No documents found in the collection.');
+                                                    }
+
+                                                    DocumentReference
+                                                        documentRef = users.doc(
+                                                            (count + 1)
+                                                                .toString());
+
+                                                    documentRef.set({
+                                                      "date": DateFormat(
+                                                              'd MMMM yyyy')
+                                                          .format(
+                                                              DateTime.now())
+                                                          .toString(),
+                                                      "desc": body.text.trim(),
+                                                      "id": count + 1,
+                                                      "image": "",
+                                                      "solved": "no",
+                                                      "solved_by": -1,
+                                                      "time_posted": DateFormat(
+                                                              'h:mm a')
+                                                          .format(
+                                                              DateTime.now())
+                                                          .toString(),
+                                                      "title":
+                                                          title.text.trim(),
+                                                    }).then((value) {
+                                                      Fluttertoast.showToast(
+                                                        msg: "Created issues",
+                                                        toastLength:
+                                                            Toast.LENGTH_SHORT,
+                                                        gravity:
+                                                            ToastGravity.BOTTOM,
+                                                        timeInSecForIosWeb: 1,
+                                                      );
+                                                    }).catchError((err) {
+                                                      Fluttertoast.showToast(
+                                                        msg:
+                                                            "Could not create issues",
+                                                        toastLength:
+                                                            Toast.LENGTH_SHORT,
+                                                        gravity:
+                                                            ToastGravity.BOTTOM,
+                                                        timeInSecForIosWeb: 1,
+                                                      );
+                                                    });
+                                                    title.text = "";
+                                                    body.text = "";
+
+                                                    Navigator.of(context).pop();
+                                                  } else if (title
+                                                          .text.isEmpty &&
+                                                      body.text.isEmpty) {
+                                                    Fluttertoast.showToast(
+                                                      msg:
+                                                          "Please enter the required fields",
+                                                      toastLength:
+                                                          Toast.LENGTH_SHORT,
+                                                      gravity:
+                                                          ToastGravity.BOTTOM,
+                                                      timeInSecForIosWeb: 1,
+                                                      backgroundColor: Colors
+                                                          .black, // Set the background color to match your app's theme
+                                                      textColor: Colors
+                                                          .white, // Set the text color to match your app's theme
+                                                      fontSize:
+                                                          16.0, // Set the font size of the toast message
+                                                    );
+                                                  } else if (title
+                                                      .text.isEmpty) {
+                                                    Fluttertoast.showToast(
+                                                      msg:
+                                                          "Please enter the title",
+                                                      toastLength:
+                                                          Toast.LENGTH_SHORT,
+                                                      gravity:
+                                                          ToastGravity.BOTTOM,
+                                                      timeInSecForIosWeb: 1,
+                                                    );
+                                                  } else {
+                                                    Fluttertoast.showToast(
+                                                      msg:
+                                                          "Please enter the content",
+                                                      toastLength:
+                                                          Toast.LENGTH_SHORT,
+                                                      gravity:
+                                                          ToastGravity.BOTTOM,
+                                                      timeInSecForIosWeb: 1,
+                                                    );
+                                                  }
+                                                },
+                                              ),
+                                            ],
+                                            backgroundColor: Colors.white,
+                                            elevation: 2,
+                                          ),
+                                        );
+                                        Future.delayed(
+                                            Duration(milliseconds: 500), () {
+                                          setState(() {});
+                                        });
+                                      },
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(20),
+                                        child: Container(
+                                          height: 40,
+                                          color: btnColor,
+                                          child: Center(
+                                            child: Row(
+                                              children: [
+                                                addHorizontalySpace(10),
+                                                Icon(
+                                                  Icons.add,
+                                                  color: white,
+                                                ),
+                                                addHorizontalySpace(5),
+                                                AppText(
+                                                  text: "Add New",
+                                                  size: 14,
+                                                ),
+                                                addHorizontalySpace(10),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                addVerticalSpace(10),
+                                StreamBuilder<QuerySnapshot>(
+                                    stream: FirebaseFirestore.instance
+                                        .collection(
+                                            "project_issues/issues/${widget.projectId}")
+                                        .snapshots(),
+                                    builder: (BuildContext context,
+                                        AsyncSnapshot<QuerySnapshot> snapshot) {
+                                      doit();
+                                      if (snapshot.hasData) {
+                                        QuerySnapshot querySnapshot =
+                                            snapshot.data!;
+                                        List<DocumentSnapshot> documents =
+                                            querySnapshot.docs;
+                                        print(snapshot.data!.docs.length);
+                                        return Column(
+                                          children: List.generate(
+                                              snapshot.data!.docs.length,
+                                              (index) {
+                                            Object data =
+                                                documents[index].data()!;
+                                            return Visibility(
+                                              visible: documents[index]
+                                                      ["solved"] ==
+                                                  "no",
+                                              child: Column(
+                                                children: [
+                                                  addVerticalSpace(
+                                                      height(context) * 0.01),
+                                                  Container(
+                                                    width: 0.9 * width(context),
+                                                    // height: 0.11 * height(context),
+                                                    decoration: BoxDecoration(
+                                                      color: white,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20),
                                                     ),
-                                                    Container(
-                                                      margin: EdgeInsets.only(
-                                                          top: 5),
-                                                      width: 1.5,
-                                                      color: Colors.black54,
-                                                    ),
-                                                    Container(
-                                                      padding:
-                                                          EdgeInsets.fromLTRB(
-                                                        width(context) * 0.02,
-                                                        width(context) * 0.02,
-                                                        width(context) * 0.01,
-                                                        width(context) * 0.02,
-                                                      ),
-                                                      width:
-                                                          width(context) * 0.42,
-                                                      child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          Row(
+                                                    padding:
+                                                        EdgeInsets.fromLTRB(
+                                                            8, 8, 1, 3),
+                                                    child: Row(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Container(
+                                                          width:
+                                                              width(context) *
+                                                                  0.25,
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .center,
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .center,
                                                             children: [
-                                                              Container(
-                                                                width: 11.5,
-                                                                height: 11.5,
-                                                                decoration:
-                                                                    BoxDecoration(
-                                                                  color:
-                                                                      themeColor,
-                                                                  shape: BoxShape
-                                                                      .circle,
-                                                                ),
-                                                              ),
-                                                              addHorizontalySpace(
-                                                                  width(context) *
-                                                                      0.025),
+                                                              addVerticalSpace(
+                                                                  height(context) *
+                                                                      0.023),
                                                               AppText(
-                                                                text:
-                                                                    "Your Task",
-                                                                color: black,
+                                                                text: documents[
+                                                                        index][
+                                                                    "time_posted"],
                                                                 size: width(
                                                                         context) *
-                                                                    0.043,
+                                                                    0.04,
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .bold,
+                                                                color:
+                                                                    themeColor,
+                                                              ),
+                                                              addVerticalSpace(
+                                                                  height(context) *
+                                                                      0.01),
+                                                              AppText(
+                                                                text: documents[
+                                                                        index]
+                                                                    ["date"],
+                                                                size: width(
+                                                                        context) *
+                                                                    0.035,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .normal,
+                                                                color: Colors
+                                                                    .black38,
                                                               ),
                                                             ],
                                                           ),
-                                                          addVerticalSpace(
-                                                              height(context) *
-                                                                  0.01),
-                                                          AppText(
-                                                            text:
-                                                                documents[index]
-                                                                    ["title"],
-                                                            size:
-                                                                width(context) *
-                                                                    0.036,
-                                                            color:
-                                                                Colors.black54,
-                                                            fontWeight:
-                                                                FontWeight.bold,
+                                                        ),
+                                                        Container(
+                                                          margin:
+                                                              EdgeInsets.only(
+                                                                  top: 5),
+                                                          width: 1.5,
+                                                          color: Colors.black54,
+                                                        ),
+                                                        Container(
+                                                          padding: EdgeInsets
+                                                              .fromLTRB(
+                                                            width(context) *
+                                                                0.02,
+                                                            width(context) *
+                                                                0.02,
+                                                            width(context) *
+                                                                0.01,
+                                                            width(context) *
+                                                                0.02,
                                                           ),
-                                                          AppText(
-                                                            text:
-                                                                documents[index]
-                                                                    ["desc"],
-                                                            size:
-                                                                width(context) *
-                                                                    0.033,
-                                                            color:
-                                                                Colors.black54,
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    // addHorizontalySpace(2),
-                                                    Column(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceAround,
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        addVerticalSpace(
-                                                            height(context) *
-                                                                0.02),
-                                                        InkWell(
-                                                          onTap: () async {
-                                                            //
-                                                            //
-                                                            return await showDialog(
-                                                              barrierDismissible:
-                                                                  false,
-                                                              context: context,
-                                                              builder: (context) =>
-                                                                  StatefulBuilder(
-                                                                builder: (context,
-                                                                        setState) =>
-                                                                    AlertDialog(
-                                                                  title:
-                                                                      AppText(
+                                                          width:
+                                                              width(context) *
+                                                                  0.42,
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Row(
+                                                                children: [
+                                                                  Container(
+                                                                    width: 11.5,
+                                                                    height:
+                                                                        11.5,
+                                                                    decoration:
+                                                                        BoxDecoration(
+                                                                      color:
+                                                                          themeColor,
+                                                                      shape: BoxShape
+                                                                          .circle,
+                                                                    ),
+                                                                  ),
+                                                                  addHorizontalySpace(
+                                                                      width(context) *
+                                                                          0.025),
+                                                                  AppText(
                                                                     text:
-                                                                        'Submit a Task',
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold,
+                                                                        "Your Task",
                                                                     color:
                                                                         black,
                                                                     size: width(
                                                                             context) *
-                                                                        0.05,
+                                                                        0.043,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
                                                                   ),
-                                                                  content:
-                                                                      Container(
-                                                                    width: width(
-                                                                            context) *
-                                                                        0.9,
-                                                                    height: height(
-                                                                            context) *
-                                                                        0.32,
-                                                                    child:
-                                                                        Column(
-                                                                      crossAxisAlignment:
-                                                                          CrossAxisAlignment
-                                                                              .start,
-                                                                      mainAxisSize:
-                                                                          MainAxisSize
-                                                                              .min,
-                                                                      children: [
-                                                                        AppText(
-                                                                          text:
-                                                                              "Upload and attach files of this task",
-                                                                          color:
-                                                                              Colors.black38,
-                                                                          size:
-                                                                              14,
-                                                                        ),
-                                                                        addVerticalSpace(
-                                                                            10),
-                                                                        Center(
-                                                                          child:
-                                                                              DottedBorder(
-                                                                            borderType:
-                                                                                BorderType.RRect,
-                                                                            radius:
-                                                                                Radius.circular(20),
-                                                                            dashPattern: [
-                                                                              5,
-                                                                              5
-                                                                            ],
-                                                                            color:
-                                                                                Colors.grey,
-                                                                            strokeWidth:
-                                                                                2,
-                                                                            child:
-                                                                                Container(
-                                                                              height: height(context) * 0.20,
-                                                                              width: width(context) * 0.88,
-                                                                              decoration: BoxDecoration(
-                                                                                borderRadius: BorderRadius.circular(20),
-                                                                              ),
-                                                                              child: Column(
-                                                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                                                children: [
-                                                                                  InkWell(
-                                                                                    onTap: () async {
-                                                                                      final pickedFile = await picker.pickImage(
-                                                                                        source: ImageSource.gallery,
-                                                                                        imageQuality: 80,
-                                                                                      );
-                                                                                      if (pickedFile != null) {
-                                                                                        todoimage = File(pickedFile.path);
-                                                                                        setState(() {});
-                                                                                      } else {
-                                                                                        setState(() {});
-                                                                                        print("No image selected");
-                                                                                      }
-                                                                                    },
-                                                                                    child: SizedBox(
-                                                                                      height: 60,
-                                                                                      width: 60,
-                                                                                      child: Image.asset(
-                                                                                        "assets/upload1.png",
-                                                                                        fit: BoxFit.cover,
-                                                                                      ),
-                                                                                    ),
-                                                                                  ),
-                                                                                  addVerticalSpace(10),
-                                                                                  InkWell(
-                                                                                    onTap: () async {
-                                                                                      final pickedFile = await picker.pickImage(
-                                                                                        source: ImageSource.gallery,
-                                                                                        imageQuality: 80,
-                                                                                      );
-                                                                                      if (pickedFile != null) {
-                                                                                        image = File(pickedFile.path);
-                                                                                        setState(() {});
-                                                                                      } else {
-                                                                                        setState(() {});
-                                                                                        print("No image selected");
-                                                                                      }
-                                                                                    },
-                                                                                    child: Text(
-                                                                                      "Click to upload",
-                                                                                      style: TextStyle(decoration: TextDecoration.underline),
-                                                                                    ),
-                                                                                  ),
-                                                                                  addVerticalSpace(height(context) * 0.01),
-                                                                                  AppText(
-                                                                                    text: "Maximum File Size 50 MB",
-                                                                                    color: Colors.black38,
-                                                                                  )
-                                                                                ],
-                                                                              ),
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                        addVerticalSpace(
-                                                                            10),
-                                                                        Row(
-                                                                          mainAxisAlignment:
-                                                                              MainAxisAlignment.spaceBetween,
-                                                                          children: [
-                                                                            Row(
-                                                                              children: <Widget>[
-                                                                                InkWell(
-                                                                                  onTap: () {
-                                                                                    sendInChat = !sendInChat;
-                                                                                    print(sendInChat);
-                                                                                    setState(() {});
-                                                                                  },
-                                                                                  child: Icon(
-                                                                                    sendInChat ? Icons.check_box : Icons.check_box_outline_blank,
-                                                                                    color: sendInChat ? themeColor : Colors.black26,
-                                                                                  ),
-                                                                                ),
-                                                                                addHorizontalySpace(20),
-                                                                                AppText(
-                                                                                  text: "Share in Chat",
-                                                                                  color: Colors.black54,
-                                                                                ),
-                                                                              ],
-                                                                            ),
-                                                                            Visibility(
-                                                                              visible: image != null,
-                                                                              child: IconButton(
-                                                                                  icon: Icon(Icons.remove_red_eye),
-                                                                                  color: themeColor,
-                                                                                  onPressed: () {
-                                                                                    if (image != null) {
-                                                                                      nextScreen(context, ImageOpener(imageFile: image));
-                                                                                    }
-                                                                                  }),
-                                                                            ),
-                                                                          ],
-                                                                        )
-                                                                      ],
-                                                                    ),
-                                                                  ),
-                                                                  actions: [
-                                                                    ButtonBar(
-                                                                      alignment:
-                                                                          MainAxisAlignment
-                                                                              .spaceEvenly,
-                                                                      children: [
-                                                                        ClipRRect(
-                                                                          borderRadius:
-                                                                              BorderRadius.circular(10),
-                                                                          child:
-                                                                              SizedBox(
-                                                                            width:
-                                                                                width(context) * 0.3,
-                                                                            height:
-                                                                                width(context) * 0.14,
-                                                                            child:
-                                                                                TextButton(
-                                                                              style: ButtonStyle(
-                                                                                backgroundColor: MaterialStateProperty.all<Color>(
-                                                                                  Color.fromARGB(255, 159, 207, 246).withOpacity(0.4),
-                                                                                ),
-                                                                                foregroundColor: MaterialStateProperty.all<Color>(
-                                                                                  btnColor,
-                                                                                ),
-                                                                              ),
-                                                                              child: AppText(
-                                                                                text: 'Cancel',
-                                                                                color: btnColor,
-                                                                                fontWeight: FontWeight.w500,
-                                                                                size: 16,
-                                                                              ),
-                                                                              onPressed: () {
-                                                                                image = null;
-                                                                                Navigator.of(context).pop();
-                                                                              },
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                        ClipRRect(
-                                                                          borderRadius:
-                                                                              BorderRadius.circular(10),
-                                                                          child:
-                                                                              SizedBox(
-                                                                            width:
-                                                                                width(context) * 0.3,
-                                                                            height:
-                                                                                width(context) * 0.14,
-                                                                            child:
-                                                                                TextButton(
-                                                                              style: ButtonStyle(
-                                                                                backgroundColor: MaterialStateProperty.all<Color>(btnColor),
-                                                                              ),
-                                                                              child: AppText(
-                                                                                text: 'Submit',
-                                                                                color: white,
-                                                                                fontWeight: FontWeight.w400,
-                                                                              ),
-                                                                              onPressed: () async {
-                                                                                setState() {
-                                                                                  isLoading = true;
-                                                                                }
-
-                                                                                if (image != null) {
-                                                                                  String folderPath = 'project_issues/${widget.projectId}/';
-                                                                                  String fileName = DateTime.now().millisecondsSinceEpoch.toString() + '_' + image!.path.split('/').last;
-
-                                                                                  FirebaseStorage storage = FirebaseStorage.instance;
-                                                                                  Reference ref = storage.ref().child(folderPath + fileName);
-                                                                                  UploadTask uploadTask = ref.putFile(image!);
-
-                                                                                  TaskSnapshot storageTaskSnapshot = await uploadTask.whenComplete(() => null);
-
-                                                                                  String downloadUrl = await storageTaskSnapshot.ref.getDownloadURL();
-
-                                                                                  log(downloadUrl);
-
-                                                                                  FirebaseFirestore.instance.collection("project_issues/issues/${widget.projectId}").doc(documents[index]["id"].toString()).update({
-                                                                                    'solved': 'yes',
-                                                                                    'solved_by': int.parse(Global.mainMap[0].data()["id"].toString()),
-                                                                                    "image": downloadUrl,
-                                                                                    // Add more fields and their new values as needed
-                                                                                  }).then((value) {
-                                                                                    Fluttertoast.showToast(
-                                                                                      msg: "Task done",
-                                                                                      toastLength: Toast.LENGTH_SHORT,
-                                                                                      gravity: ToastGravity.BOTTOM,
-                                                                                      timeInSecForIosWeb: 1,
-                                                                                    );
-                                                                                    print('Data updated successfully');
-                                                                                  }).catchError((error) {
-                                                                                    Fluttertoast.showToast(
-                                                                                      msg: "Task not submitted",
-                                                                                      toastLength: Toast.LENGTH_SHORT,
-                                                                                      gravity: ToastGravity.BOTTOM,
-                                                                                      timeInSecForIosWeb: 1,
-                                                                                    );
-                                                                                    print('Failed to update data: $error');
-                                                                                  });
-                                                                                  image = null;
-                                                                                  Navigator.pop(context);
-                                                                                  setState() {
-                                                                                    isLoading = false;
-                                                                                  }
-                                                                                } else {
-                                                                                  Fluttertoast.showToast(
-                                                                                    msg: "Image not selected",
-                                                                                    toastLength: Toast.LENGTH_SHORT,
-                                                                                    gravity: ToastGravity.BOTTOM,
-                                                                                    timeInSecForIosWeb: 1,
-                                                                                  );
-                                                                                }
-                                                                              },
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                      ],
-                                                                    )
-                                                                  ],
-                                                                  backgroundColor:
-                                                                      Colors
-                                                                          .white,
-                                                                  elevation: 2,
-                                                                ),
+                                                                ],
                                                               ),
-                                                            );
-                                                            //
-                                                            //
-                                                          },
-                                                          child: Container(
-                                                            width: 60,
-                                                            height: 60,
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          12),
-                                                              color: grey
-                                                                  .withOpacity(
-                                                                      0.5),
-                                                            ),
-                                                            child: Center(
-                                                              child: Icon(
-                                                                Icons.check,
+                                                              addVerticalSpace(
+                                                                  height(context) *
+                                                                      0.01),
+                                                              AppText(
+                                                                text: documents[
+                                                                        index]
+                                                                    ["title"],
+                                                                size: width(
+                                                                        context) *
+                                                                    0.036,
+                                                                color: Colors
+                                                                    .black54,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
                                                               ),
-                                                            ),
+                                                              AppText(
+                                                                text: documents[
+                                                                        index]
+                                                                    ["desc"],
+                                                                size: width(
+                                                                        context) *
+                                                                    0.033,
+                                                                color: Colors
+                                                                    .black54,
+                                                              ),
+                                                            ],
                                                           ),
                                                         ),
-                                                        addVerticalSpace(
-                                                            height(context) *
-                                                                0.007),
+                                                        // addHorizontalySpace(2),
+                                                        Column(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceAround,
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .center,
+                                                          children: [
+                                                            addVerticalSpace(
+                                                                height(context) *
+                                                                    0.02),
+                                                            InkWell(
+                                                              onTap: () async {
+                                                                //
+                                                                //
+                                                                if (Global
+                                                                        .role !=
+                                                                    "manager") {
+                                                                  return await showDialog(
+                                                                    barrierDismissible:
+                                                                        false,
+                                                                    context:
+                                                                        context,
+                                                                    builder:
+                                                                        (context) =>
+                                                                            StatefulBuilder(
+                                                                      builder: (context,
+                                                                              setState) =>
+                                                                          AlertDialog(
+                                                                        title:
+                                                                            AppText(
+                                                                          text:
+                                                                              'Submit a Task',
+                                                                          fontWeight:
+                                                                              FontWeight.bold,
+                                                                          color:
+                                                                              black,
+                                                                          size: width(context) *
+                                                                              0.05,
+                                                                        ),
+                                                                        content:
+                                                                            Container(
+                                                                          width:
+                                                                              width(context) * 0.9,
+                                                                          height:
+                                                                              height(context) * 0.32,
+                                                                          child:
+                                                                              Column(
+                                                                            crossAxisAlignment:
+                                                                                CrossAxisAlignment.start,
+                                                                            mainAxisSize:
+                                                                                MainAxisSize.min,
+                                                                            children: [
+                                                                              AppText(
+                                                                                text: "Upload and attach files of this task",
+                                                                                color: Colors.black38,
+                                                                                size: 14,
+                                                                              ),
+                                                                              addVerticalSpace(10),
+                                                                              Center(
+                                                                                child: DottedBorder(
+                                                                                  borderType: BorderType.RRect,
+                                                                                  radius: Radius.circular(20),
+                                                                                  dashPattern: [
+                                                                                    5,
+                                                                                    5
+                                                                                  ],
+                                                                                  color: Colors.grey,
+                                                                                  strokeWidth: 2,
+                                                                                  child: Container(
+                                                                                    height: height(context) * 0.20,
+                                                                                    width: width(context) * 0.88,
+                                                                                    decoration: BoxDecoration(
+                                                                                      borderRadius: BorderRadius.circular(20),
+                                                                                    ),
+                                                                                    child: Column(
+                                                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                                                      children: [
+                                                                                        InkWell(
+                                                                                          onTap: () async {
+                                                                                            final pickedFile = await picker.pickImage(
+                                                                                              source: ImageSource.gallery,
+                                                                                              imageQuality: 80,
+                                                                                            );
+                                                                                            if (pickedFile != null) {
+                                                                                              todoimage = File(pickedFile.path);
+                                                                                              setState(() {});
+                                                                                            } else {
+                                                                                              setState(() {});
+                                                                                              print("No image selected");
+                                                                                            }
+                                                                                          },
+                                                                                          child: SizedBox(
+                                                                                            height: 60,
+                                                                                            width: 60,
+                                                                                            child: Image.asset(
+                                                                                              "assets/upload1.png",
+                                                                                              fit: BoxFit.cover,
+                                                                                            ),
+                                                                                          ),
+                                                                                        ),
+                                                                                        addVerticalSpace(10),
+                                                                                        InkWell(
+                                                                                          onTap: () async {
+                                                                                            final pickedFile = await picker.pickImage(
+                                                                                              source: ImageSource.gallery,
+                                                                                              imageQuality: 80,
+                                                                                            );
+                                                                                            if (pickedFile != null) {
+                                                                                              image = File(pickedFile.path);
+                                                                                              setState(() {});
+                                                                                            } else {
+                                                                                              setState(() {});
+                                                                                              print("No image selected");
+                                                                                            }
+                                                                                          },
+                                                                                          child: Text(
+                                                                                            "Click to upload",
+                                                                                            style: TextStyle(decoration: TextDecoration.underline),
+                                                                                          ),
+                                                                                        ),
+                                                                                        addVerticalSpace(height(context) * 0.01),
+                                                                                        AppText(
+                                                                                          text: "Maximum File Size 50 MB",
+                                                                                          color: Colors.black38,
+                                                                                        )
+                                                                                      ],
+                                                                                    ),
+                                                                                  ),
+                                                                                ),
+                                                                              ),
+                                                                              addVerticalSpace(10),
+                                                                              Row(
+                                                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                                children: [
+                                                                                  Row(
+                                                                                    children: <Widget>[
+                                                                                      InkWell(
+                                                                                        onTap: () {
+                                                                                          sendInChat = !sendInChat;
+                                                                                          print(sendInChat);
+                                                                                          setState(() {});
+                                                                                        },
+                                                                                        child: Icon(
+                                                                                          sendInChat ? Icons.check_box : Icons.check_box_outline_blank,
+                                                                                          color: sendInChat ? themeColor : Colors.black26,
+                                                                                        ),
+                                                                                      ),
+                                                                                      addHorizontalySpace(20),
+                                                                                      AppText(
+                                                                                        text: "Share in Chat",
+                                                                                        color: Colors.black54,
+                                                                                      ),
+                                                                                    ],
+                                                                                  ),
+                                                                                  Visibility(
+                                                                                    visible: image != null,
+                                                                                    child: IconButton(
+                                                                                        icon: Icon(Icons.remove_red_eye),
+                                                                                        color: themeColor,
+                                                                                        onPressed: () {
+                                                                                          if (image != null) {
+                                                                                            nextScreen(context, ImageOpener(imageFile: image));
+                                                                                          }
+                                                                                        }),
+                                                                                  ),
+                                                                                ],
+                                                                              )
+                                                                            ],
+                                                                          ),
+                                                                        ),
+                                                                        actions: [
+                                                                          ButtonBar(
+                                                                            alignment:
+                                                                                MainAxisAlignment.spaceEvenly,
+                                                                            children: [
+                                                                              ClipRRect(
+                                                                                borderRadius: BorderRadius.circular(10),
+                                                                                child: SizedBox(
+                                                                                  width: width(context) * 0.3,
+                                                                                  height: width(context) * 0.14,
+                                                                                  child: TextButton(
+                                                                                    style: ButtonStyle(
+                                                                                      backgroundColor: MaterialStateProperty.all<Color>(
+                                                                                        Color.fromARGB(255, 159, 207, 246).withOpacity(0.4),
+                                                                                      ),
+                                                                                      foregroundColor: MaterialStateProperty.all<Color>(
+                                                                                        btnColor,
+                                                                                      ),
+                                                                                    ),
+                                                                                    child: AppText(
+                                                                                      text: 'Cancel',
+                                                                                      color: btnColor,
+                                                                                      fontWeight: FontWeight.w500,
+                                                                                      size: 16,
+                                                                                    ),
+                                                                                    onPressed: () {
+                                                                                      image = null;
+                                                                                      Navigator.of(context).pop();
+                                                                                    },
+                                                                                  ),
+                                                                                ),
+                                                                              ),
+                                                                              ClipRRect(
+                                                                                borderRadius: BorderRadius.circular(10),
+                                                                                child: SizedBox(
+                                                                                  width: width(context) * 0.3,
+                                                                                  height: width(context) * 0.14,
+                                                                                  child: TextButton(
+                                                                                    style: ButtonStyle(
+                                                                                      backgroundColor: MaterialStateProperty.all<Color>(btnColor),
+                                                                                    ),
+                                                                                    child: AppText(
+                                                                                      text: 'Submit',
+                                                                                      color: white,
+                                                                                      fontWeight: FontWeight.w400,
+                                                                                    ),
+                                                                                    onPressed: () async {
+                                                                                      if (Global.role != "manager") {
+                                                                                        setState() {
+                                                                                          isLoading = true;
+                                                                                        }
+
+                                                                                        if (image != null) {
+                                                                                          String folderPath = 'project_issues/${widget.projectId}/';
+                                                                                          String fileName = DateTime.now().millisecondsSinceEpoch.toString() + '_' + image!.path.split('/').last;
+
+                                                                                          FirebaseStorage storage = FirebaseStorage.instance;
+                                                                                          Reference ref = storage.ref().child(folderPath + fileName);
+                                                                                          UploadTask uploadTask = ref.putFile(image!);
+
+                                                                                          TaskSnapshot storageTaskSnapshot = await uploadTask.whenComplete(() => null);
+
+                                                                                          String downloadUrl = await storageTaskSnapshot.ref.getDownloadURL();
+
+                                                                                          log(downloadUrl);
+
+                                                                                          FirebaseFirestore.instance.collection("project_issues/issues/${widget.projectId}").doc(documents[index]["id"].toString()).update({
+                                                                                            'solved': 'yes',
+                                                                                            'solved_by': int.parse(Global.mainMap[0].data()["id"].toString()),
+                                                                                            "image": downloadUrl,
+                                                                                            // Add more fields and their new values as needed
+                                                                                          }).then((value) {
+                                                                                            Fluttertoast.showToast(
+                                                                                              msg: "Task done",
+                                                                                              toastLength: Toast.LENGTH_SHORT,
+                                                                                              gravity: ToastGravity.BOTTOM,
+                                                                                              timeInSecForIosWeb: 1,
+                                                                                            );
+                                                                                            print('Data updated successfully');
+                                                                                          }).catchError((error) {
+                                                                                            Fluttertoast.showToast(
+                                                                                              msg: "Task not submitted",
+                                                                                              toastLength: Toast.LENGTH_SHORT,
+                                                                                              gravity: ToastGravity.BOTTOM,
+                                                                                              timeInSecForIosWeb: 1,
+                                                                                            );
+                                                                                            print('Failed to update data: $error');
+                                                                                          });
+                                                                                          image = null;
+                                                                                          Navigator.pop(context);
+                                                                                          setState() {
+                                                                                            isLoading = false;
+                                                                                          }
+                                                                                        } else {
+                                                                                          Fluttertoast.showToast(
+                                                                                            msg: "Image not selected",
+                                                                                            toastLength: Toast.LENGTH_SHORT,
+                                                                                            gravity: ToastGravity.BOTTOM,
+                                                                                            timeInSecForIosWeb: 1,
+                                                                                          );
+                                                                                        }
+                                                                                      }
+                                                                                    },
+                                                                                  ),
+                                                                                ),
+                                                                              ),
+                                                                            ],
+                                                                          )
+                                                                        ],
+                                                                        backgroundColor:
+                                                                            Colors.white,
+                                                                        elevation:
+                                                                            2,
+                                                                      ),
+                                                                    ),
+                                                                  );
+                                                                }
+                                                                //
+                                                              },
+                                                              child: Container(
+                                                                width: 60,
+                                                                height: 60,
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              12),
+                                                                  color: grey
+                                                                      .withOpacity(
+                                                                          0.5),
+                                                                ),
+                                                                child: Center(
+                                                                  child: Icon(
+                                                                    Icons.check,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            addVerticalSpace(
+                                                                height(context) *
+                                                                    0.007),
+                                                          ],
+                                                        )
                                                       ],
-                                                    )
-                                                  ],
+                                                    ),
+                                                  ),
+                                                  addVerticalSpace(
+                                                      height(context) * 0.005),
+                                                ],
+                                              ),
+                                            );
+                                          }),
+                                        );
+                                      } else {
+                                        return Center(
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: <Widget>[
+                                              addVerticalSpace(50),
+                                              Center(
+                                                child: AppText(
+                                                  text: "No current tasks yet",
+                                                  color: Colors.black26,
                                                 ),
                                               ),
-                                              addVerticalSpace(
-                                                  height(context) * 0.005),
                                             ],
                                           ),
                                         );
-                                      }),
-                                    );
-                                  } else {
-                                    return Center(
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: <Widget>[
-                                          addVerticalSpace(50),
-                                          Center(
-                                            child: AppText(
-                                              text: "No current tasks yet",
-                                              color: Colors.black26,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  }
-                                }),
+                                      }
+                                    }),
+                              ],
+                            ),
                           ),
                           // Child 3
                           SingleChildScrollView(

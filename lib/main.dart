@@ -3,6 +3,7 @@
 import 'dart:developer';
 
 import 'package:amacle_studio_app/global/globals.dart';
+import 'package:amacle_studio_app/pages/bottom_bar_pages/bottom_bar_chat_page.dart';
 import 'package:amacle_studio_app/pages/bottom_bar_pages/manager_project_screen.dart';
 import 'package:amacle_studio_app/pages/bottom_bar_pages/chat.dart';
 import 'package:amacle_studio_app/pages/bottom_bar_pages/home_page.dart';
@@ -66,7 +67,7 @@ class _HomePageState extends State<HomePage> {
 
   List pages = [
     HomePageScreen(),
-    ChatsPage(),
+    BottomBarCharPage(),
     dontKnowPage(),
   ];
 

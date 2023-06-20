@@ -158,99 +158,114 @@ class _HomePageScreenState extends State<HomePageScreen>
     );
   }
 
-  Column maintainence(List<DocumentSnapshot> doc) {
-    // Global().destroy();
-    // doit();
+  Column maintainence(List<DocumentSnapshot> docs) {
+    int percent = 100;
+
     return Column(
-      children: List.generate(6, (index) {
-        return Column(
-          children: [
-            addVerticalSpace(height(context) * 0.01),
-            Container(
-              width: 0.9 * width(context),
-              // height: 0.11 * height(context),
-              decoration: BoxDecoration(
-                color: white,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              padding: EdgeInsets.fromLTRB(8, 8, 1, 3),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      children: List.generate(
+        docs.length,
+        (index) {
+          return Builder(builder: (context) {
+            return Visibility(
+              visible: docs[index]["status"] == "maintain",
+              child: Column(
                 children: [
+                  addVerticalSpace(height(context) * 0.01),
                   Container(
-                    width: width(context) * 0.25,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        addVerticalSpace(height(context) * 0.01),
-                        AppText(
-                          text: "6:00 PM",
-                          size: width(context) * 0.04,
-                          fontWeight: FontWeight.bold,
-                          color: themeColor,
-                        ),
-                        addVerticalSpace(height(context) * 0.01),
-                        AppText(
-                          text: "May 21",
-                          size: width(context) * 0.035,
-                          fontWeight: FontWeight.normal,
-                          color: Colors.black38,
-                        ),
-                      ],
+                    width: 0.9 * width(context),
+                    // height: 0.11 * height(context),
+                    decoration: BoxDecoration(
+                      color: white,
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(top: 5),
-                    width: 1.5,
-                    color: Colors.black54,
-                  ),
-                  Container(
-                    padding: EdgeInsets.fromLTRB(
-                      width(context) * 0.02,
-                      width(context) * 0.02,
-                      width(context) * 0.01,
-                      width(context) * 0.02,
-                    ),
-                    width: width(context) * 0.62,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              width: 11.5,
-                              height: 11.5,
-                              decoration: BoxDecoration(
-                                color: themeColor,
-                                shape: BoxShape.circle,
-                              ),
+                    padding: EdgeInsets.fromLTRB(8, 4, 1, 3),
+                    child: InkWell(
+                      onTap: () {
+                        nextScreen(
+                          context,
+                          ProjectDetailScreen(
+                            repoOwner: docs[index]["repo_owner"],
+                            repoName: docs[index]["repo_name"],
+                            token: docs[index]["token"],
+                            projectId: docs[index]["id"],
+                            docs: docs[index],
+                          ),
+                        );
+                      },
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            width: width(context) * 0.25,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                addVerticalSpace(height(context) * 0.01),
+                                Container(
+                                  height: width(context) * 0.17,
+                                  width: width(context) * 0.17,
+                                  // maxRadius: width(context) * 0.1,
+                                  // backgroundColor: themeColor.withOpacity(0.12),
+                                  decoration:
+                                      BoxDecoration(shape: BoxShape.circle),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(
+                                        width(context) * 0.1),
+                                    child: Image.network(
+                                      docs[index]["image"],
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                )
+                              ],
                             ),
-                            addHorizontalySpace(width(context) * 0.025),
-                            AppText(
-                              text: "Your Task",
-                              color: black,
-                              size: width(context) * 0.043,
-                              fontWeight: FontWeight.bold,
+                          ),
+                          Container(
+                            margin: EdgeInsets.only(top: 5),
+                            width: 1.5,
+                          ),
+                          Container(
+                            padding: EdgeInsets.fromLTRB(
+                              width(context) * 0.02,
+                              width(context) * 0.05,
+                              width(context) * 0.01,
+                              width(context) * 0.02,
                             ),
-                          ],
-                        ),
-                        addVerticalSpace(height(context) * 0.01),
-                        AppText(
-                          text:
-                              "Allow users to sign in or sign up using Firebase Authentication",
-                          size: width(context) * 0.033,
-                          color: Colors.black54,
-                        ),
-                      ],
+                            width: width(context) * 0.62,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                addHorizontalySpace(width(context) * 0.025),
+                                AppText(
+                                  text: docs[index]["name"],
+                                  color: black,
+                                  size: width(context) * 0.047,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                addVerticalSpace(height(context) * 0.01),
+                                AppText(
+                                  // text: "${docs[index]["progress"]}%",
+                                  text: "100%",
+                                  size: width(context) * 0.037,
+                                  color: percent == 100
+                                      ? Colors.blue
+                                      : Colors.black54,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
+                  addVerticalSpace(height(context) * 0.005),
                 ],
               ),
-            ),
-            addVerticalSpace(height(context) * 0.005),
-          ],
-        );
-      }),
+            );
+          });
+        },
+      ),
     );
   }
 

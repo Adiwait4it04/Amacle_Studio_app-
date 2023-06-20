@@ -150,6 +150,7 @@ class _ChatProfileDetailsState extends State<ChatProfileDetails> {
                         "sendby": Global.mainMap[0]["name"],
                         "message": "",
                         "id": widget.doc["id"],
+                        "sender_id": Global.mainMap[0]["id"],
                         "type": "contact",
                         "time": FieldValue.serverTimestamp(),
                       };
