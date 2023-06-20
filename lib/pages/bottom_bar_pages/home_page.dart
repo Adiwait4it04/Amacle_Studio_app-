@@ -3,6 +3,7 @@
 import 'dart:developer';
 
 import 'package:amacle_studio_app/authentication/auth_controller.dart';
+import 'package:amacle_studio_app/pages/bottom_bar_pages/notification_screen.dart';
 import 'package:amacle_studio_app/pages/project_detail_screen.dart';
 import 'package:amacle_studio_app/utils/app_text.dart';
 import 'package:amacle_studio_app/utils/styles.dart';
@@ -332,7 +333,7 @@ class _HomePageScreenState extends State<HomePageScreen>
                                 child: Center(
                                   child: IconButton(
                                     onPressed: () {
-                                      nextScreen(context, Profile(edit: false));
+                                      nextScreen(context, NotificationScreen());
                                     },
                                     icon: Icon(
                                       CupertinoIcons.bell,
@@ -376,6 +377,7 @@ class _HomePageScreenState extends State<HomePageScreen>
             ),
           ),
           Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               addHorizontalySpace(width(context) * 0.34),
               AppText(
@@ -385,11 +387,11 @@ class _HomePageScreenState extends State<HomePageScreen>
                 fontWeight: FontWeight.bold,
               ),
               addHorizontalySpace(width(context) * 0.29),
-              Icon(
-                Icons.search,
-                size: width(context) * 0.08,
-                color: themeColor,
-              ),
+              // Icon(
+              //   Icons.search,
+              //   size: width(context) * 0.08,
+              //   color: themeColor,
+              // ),
             ],
           ),
           addVerticalSpace(height(context) * 0.01),

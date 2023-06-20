@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:amacle_studio_app/pages/bottom_bar_pages/chat.dart';
@@ -11,6 +12,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:get/get_connect/http/src/_http/_stub/_file_decoder_stub.dart';
 
 import '../../global/globals.dart';
 
@@ -32,6 +34,11 @@ class _BottomBarCharPageState extends State<BottomBarCharPage> {
 
   @override
   Widget build(BuildContext context) {
+    List<int> userInOrder = [];
+    List<int> filteredUserID = [];
+    List<DocumentSnapshot> userData = [];
+    List<DocumentSnapshot> chatDoc = [];
+    List<Map<String, dynamic>> chatData = [];
     return SafeArea(
       child: Scaffold(
         body: Column(
@@ -76,103 +83,120 @@ class _BottomBarCharPageState extends State<BottomBarCharPage> {
               height: 20,
             ),
             Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: StreamBuilder<QuerySnapshot>(
-                  stream: (Global.role == "developer")
-                      ? FirebaseFirestore.instance
-                          .collection("users")
-                          .where("id", isNotEqualTo: Global.mainMap[0]["id"])
-                          .where("role",
-                              whereIn: ["manager", "developer"]).snapshots()
-                      : FirebaseFirestore.instance
-                          .collection("users")
-                          .where("id", isNotEqualTo: Global.mainMap[0]["id"])
-                          .snapshots(),
-                  builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                    if (snapshot.hasData) {
-                      List<DocumentSnapshot> documents = snapshot.data!.docs;
-                      return ListView.builder(
-                          itemCount: documents.length,
-                          itemBuilder: (context, index) {
-                            return StreamBuilder<QuerySnapshot>(
-                                stream: FirebaseFirestore.instance
-                                    .collection('chatroom')
-                                    .doc(chatRoomId(
-                                        Global.id, documents[index]["id"]))
-                                    .collection('chats')
-                                    .snapshots(),
-                                builder: (context, AsyncSnapshot snaps) {
-                                  if (snapshot.hasData) {
-                                    print(snaps.data?.docs.length ?? 0);
-                                    return Visibility(
-                                      visible:
-                                          (snaps.data?.docs.length ?? 0) != 0,
-                                      child: Column(
-                                        children: [
-                                          ListTile(
-                                            title: Text(
-                                              documents[index]["name"]!,
-                                              style: const TextStyle(
-                                                  color: Colors.black,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                            // subtitle: Text(
-                                            //   display_list[index].last_chat!,
-                                            //   style: const TextStyle(
-                                            //       color: Colors.black),
-                                            // ),
-                                            leading: CircleAvatar(
-                                              maxRadius: width(context) * 0.065,
-                                              backgroundColor:
-                                                  Color(0xFFB4DBFF),
-                                              // backgroundColor: Colors.transparent,
-                                              child: Center(
-                                                child: Icon(
-                                                  Icons.person,
-                                                  size: width(context) * 0.11,
-                                                  color: Color(0xFFEAF2FF),
+              child: StreamBuilder<QuerySnapshot>(
+                  stream: null,
+                  builder: (context, snapshot) {
+                    return Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: StreamBuilder<QuerySnapshot>(
+                        stream: (Global.role == "developer")
+                            ? FirebaseFirestore.instance
+                                .collection("users")
+                                .where("id",
+                                    isNotEqualTo: Global.mainMap[0]["id"])
+                                .where("role", whereIn: [
+                                "manager",
+                                "developer"
+                              ]).snapshots()
+                            : FirebaseFirestore.instance
+                                .collection("users")
+                                .where("id",
+                                    isNotEqualTo: Global.mainMap[0]["id"])
+                                .snapshots(),
+                        builder:
+                            (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                          if (snapshot.hasData) {
+                            List<DocumentSnapshot> documents =
+                                snapshot.data!.docs;
+                            return ListView.builder(
+                                itemCount: documents.length,
+                                itemBuilder: (context, index) {
+                                  return StreamBuilder<QuerySnapshot>(
+                                      stream: FirebaseFirestore.instance
+                                          .collection('chatroom')
+                                          .doc(chatRoomId(Global.id,
+                                              documents[index]["id"]))
+                                          .collection('chats')
+                                          .snapshots(),
+                                      builder: (context, AsyncSnapshot snaps) {
+                                        if (snapshot.hasData) {
+                                          print(snaps.data?.docs.length ?? 0);
+                                          return Visibility(
+                                            visible: (snaps.data?.docs.length ??
+                                                    0) !=
+                                                0,
+                                            child: Column(
+                                              children: [
+                                                ListTile(
+                                                  title: Text(
+                                                    documents[index]["name"]!,
+                                                    style: const TextStyle(
+                                                        color: Colors.black,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                  // subtitle: Text(
+                                                  //   display_list[index].last_chat!,
+                                                  //   style: const TextStyle(
+                                                  //       color: Colors.black),
+                                                  // ),
+                                                  leading: CircleAvatar(
+                                                    maxRadius:
+                                                        width(context) * 0.065,
+                                                    backgroundColor:
+                                                        Color(0xFFB4DBFF),
+                                                    // backgroundColor: Colors.transparent,
+                                                    child: Center(
+                                                      child: Icon(
+                                                        Icons.person,
+                                                        size: width(context) *
+                                                            0.11,
+                                                        color:
+                                                            Color(0xFFEAF2FF),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  onTap: () {
+                                                    String roomId = chatRoomId(
+                                                        Global.id,
+                                                        documents[index]["id"]);
+                                                    print(roomId);
+                                                    nextScreen(
+                                                        context,
+                                                        ChatPage(
+                                                          chatRoomId: roomId,
+                                                          doc: documents[index],
+                                                        ));
+                                                  },
                                                 ),
-                                              ),
+                                                Visibility(
+                                                  visible: index !=
+                                                      documents.length - 1,
+                                                  child: Container(
+                                                    margin:
+                                                        const EdgeInsets.only(
+                                                            left: 8, right: 8),
+                                                    child: Divider(
+                                                      color: Colors.black26,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
                                             ),
-                                            onTap: () {
-                                              String roomId = chatRoomId(
-                                                  Global.id,
-                                                  documents[index]["id"]);
-                                              print(roomId);
-                                              nextScreen(
-                                                  context,
-                                                  ChatPage(
-                                                    chatRoomId: roomId,
-                                                    doc: documents[index],
-                                                  ));
-                                            },
-                                          ),
-                                          Visibility(
-                                            visible:
-                                                index != documents.length - 1,
-                                            child: Container(
-                                              margin: const EdgeInsets.only(
-                                                  left: 8, right: 8),
-                                              child: Divider(
-                                                color: Colors.black26,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  } else {
-                                    return SizedBox(width: 0.01, height: 0.01);
-                                  }
+                                          );
+                                        } else {
+                                          return SizedBox(
+                                              width: 0.01, height: 0.01);
+                                        }
+                                      });
                                 });
-                          });
-                    } else {
-                      return Container();
-                    }
-                  },
-                ),
-              ),
+                          } else {
+                            return Container();
+                          }
+                        },
+                      ),
+                    );
+                  }),
             ),
           ],
         ),

@@ -152,6 +152,7 @@ class _ChatProfileDetailsState extends State<ChatProfileDetails> {
                         "id": widget.doc["id"],
                         "sender_id": Global.mainMap[0]["id"],
                         "type": "contact",
+                        "sent_to": widget.chattingWithUser!["id"],
                         "time": FieldValue.serverTimestamp(),
                       };
 

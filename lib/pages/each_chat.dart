@@ -81,6 +81,7 @@ class _ChatPageState extends State<ChatPage> {
       "message": "",
       "sender_id": Global.mainMap[0]["id"],
       "type": "img",
+      "sent_to": widget.doc["id"],
       "time": FieldValue.serverTimestamp(),
     });
 
@@ -202,6 +203,7 @@ class _ChatPageState extends State<ChatPage> {
       "message": "",
       "type": "audio",
       "sender_id": Global.mainMap[0]["id"],
+      "sent_to": widget.doc["id"],
       "time": FieldValue.serverTimestamp(),
     });
 
@@ -242,6 +244,7 @@ class _ChatPageState extends State<ChatPage> {
         "message": _message.text,
         "type": "text",
         "sender_id": Global.mainMap[0]["id"],
+        "sent_to": widget.doc["id"],
         "time": FieldValue.serverTimestamp(),
       };
 
@@ -296,6 +299,7 @@ class _ChatPageState extends State<ChatPage> {
       "sendby": Global.mainMap[0]["name"],
       "message": "",
       "type": "document",
+      "sent_to": widget.doc["id"],
       "sender_id": Global.mainMap[0]["id"],
       "time": FieldValue.serverTimestamp(),
     });

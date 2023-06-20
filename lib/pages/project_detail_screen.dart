@@ -8,6 +8,7 @@ import 'package:amacle_studio_app/utils/widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttericon/typicons_icons.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -263,7 +264,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
           .collection("projects")
           .doc(widget.projectId.toString())
           .update({
-            "progress": prog,
+            "progress": widget.docs["status"] == "active" ? prog : 100,
           })
           .then((value) {})
           .catchError((error) {
@@ -295,7 +296,16 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
     repoName = widget.repoName;
     username = widget.repoOwner;
     personalAccessToken = widget.token;
+
+    String role = Global.role == "manager" ? "Manager" : "Developer";
+
+    List notify = Global.role == "manager"
+        ? widget.docs["developer_id"]
+        : (widget.docs["developer_id"]
+          ..remove(Global.id)
+          ..add(widget.docs["manager_id"]));
     try {
+      print(notify);
       return Scaffold(
         body: ModalProgressHUD(
           inAsyncCall: isLoading,
@@ -471,102 +481,178 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
                           ),
                         ),
                         addVerticalSpace(20),
-                        Container(
-                          width: 0.9 * width(context),
-                          // height: 0.11 * height(context),
-                          decoration: BoxDecoration(
-                            color: white,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          padding: EdgeInsets.fromLTRB(8, 4, 1, 3),
-                          child: InkWell(
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  width: width(context) * 0.25,
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      addVerticalSpace(height(context) * 0.029),
-                                      CircleAvatar(
-                                        maxRadius: width(context) * 0.06,
-                                        backgroundColor:
-                                            themeColor.withOpacity(0.12),
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(200),
-                                          child: Icon(
-                                            Icons.call,
-                                            color: themeColor,
-                                          ),
-                                        ),
-                                      )
-                                    ],
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  FirebaseFirestore.instance
+                                      .collection('notifications')
+                                      .add({
+                                    "heading": "Schedule a Call",
+                                    "text":
+                                        "$role ${Global.mainMap[0]["name"]} has request a Call",
+                                    "to": notify,
+                                    "by": Global.id,
+                                    "time": DateFormat('h:mm a')
+                                        .format(DateTime.now())
+                                        .toString(),
+                                    "date": DateFormat('dd MMM yyyy')
+                                        .format(DateTime.now())
+                                        .toString(),
+                                    "timestamp": FieldValue.serverTimestamp(),
+                                  }).then((value) {
+                                    Fluttertoast.showToast(
+                                      msg: "Notified",
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.BOTTOM,
+                                      timeInSecForIosWeb: 1,
+                                    );
+                                  }).catchError((onError) {
+                                    Fluttertoast.showToast(
+                                      msg: "Some error occured",
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.BOTTOM,
+                                      timeInSecForIosWeb: 1,
+                                    );
+                                  });
+                                },
+                                child: Container(
+                                  width: width(context) * 0.4,
+                                  height: height(context) * 0.07,
+                                  decoration: BoxDecoration(
+                                    color: btnColor,
+                                    borderRadius: BorderRadius.circular(15),
                                   ),
-                                ),
-                                Container(
-                                  margin: EdgeInsets.only(top: 5),
-                                  width: 1.5,
-                                ),
-                                Container(
-                                  padding: EdgeInsets.fromLTRB(
-                                    width(context) * 0.02,
-                                    width(context) * 0.05,
-                                    width(context) * 0.01,
-                                    width(context) * 0.02,
-                                  ),
-                                  width: width(context) * 0.62,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                  child: Row(
                                     children: [
                                       addHorizontalySpace(
-                                          width(context) * 0.025),
+                                          width(context) * 0.03),
+                                      Icon(Icons.call, color: white),
+                                      addHorizontalySpace(
+                                          width(context) * 0.03),
                                       AppText(
-                                        text: "Google Meet: New Update",
-                                        color: black,
-                                        size: width(context) * 0.043,
-                                        fontWeight: FontWeight.bold,
+                                        text: "Notify call",
+                                        color: white,
                                       ),
-                                      addVerticalSpace(height(context) * 0.005),
-                                      AppText(
-                                        text: "4:00 PM > 5:30 PM",
-                                        color: grey.withOpacity(0.5),
-                                        size: width(context) * 0.037,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      RichText(
-                                        text: TextSpan(children: [
-                                          WidgetSpan(
-                                            child: Padding(
-                                              padding:
-                                                  EdgeInsets.only(left: 2.0),
-                                              child: Icon(
-                                                Icons.copy,
-                                                size: width(context) * 0.06,
-                                                color: Colors.black54,
-                                              ),
-                                            ),
-                                          ),
-                                          TextSpan(
-                                            text: "  Copy Link",
-                                            style: TextStyle(
-                                              color: Colors.black54,
-                                              fontSize: width(context) * 0.037,
-                                            ),
-                                          )
-                                        ]),
-                                      ),
+                                      addHorizontalySpace(
+                                          width(context) * 0.03),
                                     ],
                                   ),
                                 ),
-                              ],
-                            ),
+                              ),
+                              addHorizontalySpace(20),
+                              GestureDetector(
+                                onTap: () {
+                                  FirebaseFirestore.instance
+                                      .collection('notifications')
+                                      .add({
+                                    "heading": "Schedule a Meet",
+                                    "text":
+                                        "$role ${Global.mainMap[0]["name"]} has request a Meet",
+                                    "to": notify,
+                                    "by": Global.id,
+                                    "time": DateFormat('h:mm a')
+                                        .format(DateTime.now())
+                                        .toString(),
+                                    "date": DateFormat('dd MMM yyyy')
+                                        .format(DateTime.now())
+                                        .toString(),
+                                    "timestamp": FieldValue.serverTimestamp(),
+                                  }).then((value) {
+                                    Fluttertoast.showToast(
+                                      msg: "Notified",
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.BOTTOM,
+                                      timeInSecForIosWeb: 1,
+                                    );
+                                  }).catchError((onError) {
+                                    Fluttertoast.showToast(
+                                      msg: "Some error occured",
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.BOTTOM,
+                                      timeInSecForIosWeb: 1,
+                                    );
+                                  });
+                                },
+                                child: Container(
+                                  width: width(context) * 0.4,
+                                  height: height(context) * 0.07,
+                                  decoration: BoxDecoration(
+                                    color: btnColor,
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      addHorizontalySpace(
+                                          width(context) * 0.03),
+                                      Icon(Icons.video_call, color: white),
+                                      addHorizontalySpace(
+                                          width(context) * 0.03),
+                                      AppText(
+                                        text: "Notify meet",
+                                        color: white,
+                                      ),
+                                      addHorizontalySpace(
+                                          width(context) * 0.03),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              addHorizontalySpace(20),
+                              GestureDetector(
+                                onTap: () {
+                                  FirebaseFirestore.instance
+                                      .collection("projects")
+                                      .doc(widget.projectId.toString())
+                                      .update({
+                                    "status": widget.docs["status"] == "active"
+                                        ? "maintain"
+                                        : "finished",
+                                  }).then((value) {
+                                    Fluttertoast.showToast(
+                                      msg: widget.docs["status"] == "active"
+                                          ? "Moved to maintainance"
+                                          : "Marked as finished",
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.BOTTOM,
+                                      timeInSecForIosWeb: 1,
+                                    );
+                                  }).catchError((onError) {
+                                    Fluttertoast.showToast(
+                                      msg: "Some error occured",
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.BOTTOM,
+                                      timeInSecForIosWeb: 1,
+                                    );
+                                  });
+                                },
+                                child: Container(
+                                  height: height(context) * 0.07,
+                                  decoration: BoxDecoration(
+                                    color: btnColor,
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      addHorizontalySpace(10),
+                                      AppText(
+                                        text: widget.docs["status"] == "active"
+                                            ? "Put to maintainance"
+                                            : "Mark as finished",
+                                        color: white,
+                                      ),
+                                      addHorizontalySpace(
+                                          width(context) * 0.03),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
+                        )
                       ],
                     ),
                     addVerticalSpace(height(context) * 0.017),
