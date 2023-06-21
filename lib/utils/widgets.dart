@@ -98,3 +98,10 @@ Widget loadingState() {
     child: CircularProgressIndicator(),
   );
 }
+
+Widget nullWidget() {
+  return SizedBox(
+    height: 0.01,
+    width: 0.02,
+  );
+}

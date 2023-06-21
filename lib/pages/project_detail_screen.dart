@@ -493,7 +493,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
                                       .add({
                                     "heading": "Schedule a Call",
                                     "text":
-                                        "$role ${Global.mainMap[0]["name"]} has request a Call",
+                                        "$role ${Global.mainMap[0]["name"]} has requested a Call",
                                     "to": notify,
                                     "by": Global.id,
                                     "time": DateFormat('h:mm a')
@@ -551,7 +551,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
                                       .add({
                                     "heading": "Schedule a Meet",
                                     "text":
-                                        "$role ${Global.mainMap[0]["name"]} has request a Meet",
+                                        "$role ${Global.mainMap[0]["name"]} has requested a Meet",
                                     "to": notify,
                                     "by": Global.id,
                                     "time": DateFormat('h:mm a')

@@ -1,11 +1,11 @@
 // ignore_for_file: prefer_const_constructors, sized_box_for_whitespace, prefer_const_literals_to_create_immutables
 
 import 'dart:io';
+import 'dart:math' as math;
 import 'dart:developer';
 import 'package:amacle_studio_app/pages/chat_profile_list.dart';
 import 'package:dio/dio.dart';
 import 'package:open_file/open_file.dart';
-
 import 'package:audioplayers/audioplayers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
@@ -32,6 +32,8 @@ import 'package:audioplayers/audioplayers.dart';
 import '../comps/widgets.dart';
 import '../global/globals.dart';
 import '../utils/constant.dart';
+import '../utils/storage/check_permissions.dart';
+import '../utils/storage/directory_path.dart';
 import 'audio_controller.dart';
 import 'bottom_bar_pages/chat_profile_details.dart';
 
@@ -71,19 +73,22 @@ class _ChatPageState extends State<ChatPage> {
     String fileName = Uuid().v1();
     int status = 1;
 
-    await _firestore
-        .collection('chatroom')
-        .doc(widget.chatRoomId)
-        .collection('chats')
-        .doc(fileName)
-        .set({
-      "sendby": Global.mainMap[0]["name"],
-      "message": "",
-      "sender_id": Global.mainMap[0]["id"],
-      "type": "img",
-      "sent_to": widget.doc["id"],
-      "time": FieldValue.serverTimestamp(),
-    });
+    FieldValue time = FieldValue.serverTimestamp();
+
+    // await _firestore
+    //     .collection('chatroom')
+    //     .doc(widget.chatRoomId)
+    //     .collection('chats')
+    //     .doc(fileName)
+    //     .set({
+    //   "sendby": Global.mainMap[0]["name"],
+    //   "message": "",
+    //   "fileName": fileName,
+    //   "sender_id": Global.mainMap[0]["id"],
+    //   "type": "img",
+    //   "sent_to": widget.doc["id"],
+    //   "last_time": FieldValue.serverTimestamp(),
+    // });
 
     var ref = FirebaseStorage.instance
         .ref()
@@ -104,14 +109,15 @@ class _ChatPageState extends State<ChatPage> {
     if (status == 1) {
       String imageUrl = await uploadTask.ref.getDownloadURL();
 
-      await _firestore
-          .collection('chatroom')
-          .doc(widget.chatRoomId)
-          .collection('chats')
-          .doc(fileName)
-          .update({"message": imageUrl});
+      // await _firestore
+      //     .collection('chatroom')
+      //     .doc(widget.chatRoomId)
+      //     .collection('chats')
+      //     .doc(fileName)
+      //     .update({"message": imageUrl});
 
       print(imageUrl);
+      updateMyUserList("img", imageUrl, time, fileName);
     }
   }
 
@@ -178,11 +184,6 @@ class _ChatPageState extends State<ChatPage> {
     // ap.onPlayerComplete.listen((a) {});
 
     if (stop) {
-      log("stopped");
-      log("stopped");
-      log("stopped");
-      log("stopped");
-      log("stopped");
       audioController.isRecording.value = false;
       audioController.isSending.value = true;
       await uploadAudio(File(recordFilePath));
@@ -193,19 +194,22 @@ class _ChatPageState extends State<ChatPage> {
     String fileName = Uuid().v1();
     int status = 1;
 
-    await FirebaseFirestore.instance
-        .collection('chatroom')
-        .doc(widget.chatRoomId)
-        .collection('chats')
-        .doc(fileName)
-        .set({
-      "sendby": Global.mainMap[0]["name"],
-      "message": "",
-      "type": "audio",
-      "sender_id": Global.mainMap[0]["id"],
-      "sent_to": widget.doc["id"],
-      "time": FieldValue.serverTimestamp(),
-    });
+    FieldValue time = FieldValue.serverTimestamp();
+
+    // await FirebaseFirestore.instance
+    //     .collection('chatroom')
+    //     .doc(widget.chatRoomId)
+    //     .collection('chats')
+    //     .doc(fileName)
+    //     .set({
+    //   "sendby": Global.mainMap[0]["name"],
+    //   "message": "",
+    //   "type": "audio",
+    //   "fileName": fileName,
+    //   "sender_id": Global.mainMap[0]["id"],
+    //   "sent_to": widget.doc["id"],
+    //   "last_time": FieldValue.serverTimestamp(),
+    // });
 
     var ref = FirebaseStorage.instance
         .ref()
@@ -226,34 +230,38 @@ class _ChatPageState extends State<ChatPage> {
     if (status == 1) {
       String audioUrl = await uploadTask.ref.getDownloadURL();
 
-      await FirebaseFirestore.instance
-          .collection('chatroom')
-          .doc(widget.chatRoomId)
-          .collection('chats')
-          .doc(fileName)
-          .update({"message": audioUrl});
+      // await FirebaseFirestore.instance
+      //     .collection('chatroom')
+      //     .doc(widget.chatRoomId)
+      //     .collection('chats')
+      //     .doc(fileName)
+      //     .update({"message": audioUrl});
 
-      log(audioUrl.toString());
+      updateMyUserList("audio", audioUrl, time, fileName);
     }
   }
 
   void onSendMessage() async {
-    if (_message.text.isNotEmpty) {
-      Map<String, dynamic> messages = {
-        "sendby": Global.mainMap[0]["name"],
-        "message": _message.text,
-        "type": "text",
-        "sender_id": Global.mainMap[0]["id"],
-        "sent_to": widget.doc["id"],
-        "time": FieldValue.serverTimestamp(),
-      };
+    FieldValue time = FieldValue.serverTimestamp();
 
-      _message.clear();
-      await _firestore
-          .collection('chatroom')
-          .doc(widget.chatRoomId)
-          .collection('chats')
-          .add(messages);
+    if (_message.text.isNotEmpty) {
+      // Map<String, dynamic> messages = {
+      //   "sendby": Global.mainMap[0]["name"],
+      //   "message": _message.text,
+      //   "type": "text",
+      //   "sender_id": Global.mainMap[0]["id"],
+      //   "sent_to": widget.doc["id"],
+      //   "last_time": time,
+      // };
+
+      // _message.clear();
+      // await _firestore
+      //     .collection('chatroom')
+      //     .doc(widget.chatRoomId)
+      //     .collection('chats')
+      //     .add(messages);
+
+      updateMyUserList("text", _message.text, time, _message.text);
       _message.clear();
     } else {
       print("Enter Some Text");
@@ -290,19 +298,22 @@ class _ChatPageState extends State<ChatPage> {
     String fileName = Uuid().v1();
     int status = 1;
 
-    await FirebaseFirestore.instance
-        .collection('chatroom')
-        .doc(widget.chatRoomId)
-        .collection('chats')
-        .doc(fileName)
-        .set({
-      "sendby": Global.mainMap[0]["name"],
-      "message": "",
-      "type": "document",
-      "sent_to": widget.doc["id"],
-      "sender_id": Global.mainMap[0]["id"],
-      "time": FieldValue.serverTimestamp(),
-    });
+    FieldValue time = FieldValue.serverTimestamp();
+
+    // await FirebaseFirestore.instance
+    //     .collection('chatroom')
+    //     .doc(widget.chatRoomId)
+    //     .collection('chats')
+    //     .doc(fileName)
+    //     .set({
+    //   "sendby": Global.mainMap[0]["name"],
+    //   "message": "",
+    //   "type": "document",
+    //   "fileName": fileName,
+    //   "sent_to": widget.doc["id"],
+    //   "sender_id": Global.mainMap[0]["id"],
+    //   "last_time": FieldValue.serverTimestamp(),
+    // });
 
     var ref = FirebaseStorage.instance
         .ref()
@@ -324,14 +335,14 @@ class _ChatPageState extends State<ChatPage> {
     if (status == 1) {
       String documentUrl = await uploadTask.ref.getDownloadURL();
 
-      await FirebaseFirestore.instance
-          .collection('chatroom')
-          .doc(widget.chatRoomId)
-          .collection('chats')
-          .doc(fileName)
-          .update({"message": documentUrl});
+      // await FirebaseFirestore.instance
+      //     .collection('chatroom')
+      //     .doc(widget.chatRoomId)
+      //     .collection('chats')
+      //     .doc(fileName)
+      //     .update({"message": documentUrl});
 
-      print(documentUrl);
+      updateMyUserList("document", documentUrl, time, fileName);
     }
   }
 
@@ -367,12 +378,165 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+  bool isPermission = false;
+  var checkAllPermissions = CheckPermission();
+
+  checkPermissionforStorage() async {
+    bool permission = await checkAllPermissions.isStoragePermission();
+    if (permission) {
+      setState(() {
+        isPermission = true;
+      });
+    }
+  }
+
+  checkFileExist() async {
+    var storePath = await getPathFile.getPath();
+    filePath = "$filePath/$fileName";
+    bool fileExistCheck = await File(filePath).exists();
+    setState(() {
+      fileExists = fileExistCheck;
+    });
+  }
+
+  startDownload(String fileUrl) async {
+    cancelToken = CancelToken();
+    var storePath = await getPathFile.getPath();
+    filePath = '$storePath/$fileName';
+    setState(() {
+      dowloading = true;
+      progress = 0;
+    });
+
+    try {
+      await Dio().download(fileUrl, filePath,
+          onReceiveProgress: (count, total) {
+        setState(() {
+          progress = (count / total);
+        });
+      }, cancelToken: cancelToken);
+      setState(() {
+        dowloading = false;
+        fileExists = true;
+      });
+    } catch (e) {
+      print(e);
+      setState(() {
+        dowloading = false;
+      });
+    }
+  }
+
+  String chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  final random = math.Random();
+  final results = StringBuffer();
+
+  generate() {
+    for (int i = 0; i < 15; i++) {
+      results.write(chars[random.nextInt(chars.length)]);
+    }
+  }
+
+  updateMyUserList(
+      String type, String message, FieldValue time, String fileName) {
+    String result = results.toString();
+    print(result);
+    results.clear();
+    generate();
+    Future.delayed(Duration(milliseconds: 400), () {
+      log(result.toString());
+      CollectionReference myUsersForSender = FirebaseFirestore.instance
+          .collection('users')
+          .doc(Global.id.toString())
+          .collection("my_chats");
+
+      DocumentReference userDocumentRef =
+          myUsersForSender.doc((widget.doc["id"]).toString());
+
+      Map<String, dynamic> userMap = {
+        "search_id": widget.doc["id"],
+        "last_time": time,
+        "type": type,
+        "doc_id": result.toString(),
+        "fileName": fileName,
+        "message": message,
+        "sender_id": Global.id,
+        "sendby": Global.mainMap[0]["name"],
+        "to_id": widget.doc["id"],
+        "status": "sent",
+        "seen": "yes",
+      };
+
+      userDocumentRef.collection("chats").doc(result.toString()).set(userMap);
+
+      userDocumentRef.set(userMap);
+
+      CollectionReference myUsersForReviever = FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.doc["id"].toString())
+          .collection("my_chats");
+
+      DocumentReference receiverDocumentRef =
+          myUsersForReviever.doc((Global.id).toString());
+
+      Map<String, dynamic> receiverMap = {
+        "search_id": Global.id,
+        "last_time": time,
+        "type": type,
+        "fileName": fileName,
+        "message": message,
+        "doc_id": result.toString(),
+        "sender_id": Global.id,
+        "sendby": Global.mainMap[0]["name"],
+        "to_id": widget.doc["id"],
+        "status": "recieved",
+        "seen": "no",
+      };
+
+      receiverDocumentRef
+          .collection("chats")
+          .doc(result.toString())
+          .set(receiverMap);
+
+      receiverDocumentRef.set(receiverMap);
+    });
+  }
+
+  cancelDownload() {
+    cancelToken.cancel();
+    setState(() {
+      dowloading = false;
+    });
+  }
+
+  @override
+  void initState() {
+    generate();
+    super.initState();
+    checkPermissionforStorage();
+  }
+
+  openfile() {
+    OpenFile.open(filePath);
+    print("fff $filePath");
+  }
+
+  bool downloading = false;
+  bool fileExists = false;
+  double progress = 0;
+  late String filePath;
+  bool dowloading = false;
+  String fileName = "";
+  late CancelToken cancelToken;
+  DirectoryPath getPathFile = DirectoryPath();
+
   @override
   final TextEditingController _message = TextEditingController();
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Widget build(BuildContext context) {
+    // AuthController.instance.logout();
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
@@ -427,6 +591,7 @@ class _ChatPageState extends State<ChatPage> {
         // ),
       ),
       body: SingleChildScrollView(
+        reverse: true,
         child: Column(
           children: [
             addVerticalSpace(10),
@@ -436,22 +601,31 @@ class _ChatPageState extends State<ChatPage> {
               width: size.width,
               child: StreamBuilder<QuerySnapshot>(
                 stream: _firestore
-                    .collection('chatroom')
-                    .doc(widget.chatRoomId)
-                    .collection('chats')
-                    .orderBy("time", descending: false)
+                    .collection('users')
+                    .doc(Global.id.toString())
+                    .collection('my_chats')
+                    .doc(widget.doc["id"].toString())
+                    .collection("chats")
+                    .orderBy("last_time", descending: false)
                     .snapshots(),
                 builder: (BuildContext context,
                     AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.data != null) {
+                    List<DocumentSnapshot> documents = snapshot.data!.docs;
                     return ListView.builder(
                       itemCount: snapshot.data!.docs.length,
                       itemBuilder: (context, index) {
                         Map<String, dynamic> map = snapshot.data!.docs[index]
                             .data() as Map<String, dynamic>;
                         try {
-                          return messages(size, map, context, index,
-                              snapshot.data!.docs[index].id);
+                          return messages(
+                              size,
+                              map,
+                              context,
+                              index,
+                              snapshot.data!.docs[index].id,
+                              documents,
+                              index == documents.length - 1);
                         } on Exception catch (e) {
                           // Handling the specific exception type
                           print('Caught exception: $e');
@@ -468,11 +642,11 @@ class _ChatPageState extends State<ChatPage> {
               ),
             ),
             Container(
-              height: size.height / 10,
+              height: size.height / 11,
               width: size.width,
               alignment: Alignment.centerLeft,
               child: Container(
-                height: size.height / 12,
+                height: size.height / 10,
                 width: size.width / 1.0,
                 child: Row(
                   // mainAxisAlignment: MainAxisAlignment.start,
@@ -567,6 +741,8 @@ class _ChatPageState extends State<ChatPage> {
                       height: size.height / 17,
                       width: size.width / 1.58,
                       child: TextField(
+                        maxLines: 1,
+                        keyboardType: TextInputType.multiline,
                         textAlign: TextAlign.left,
                         controller: _message,
                         decoration: InputDecoration(
@@ -624,7 +800,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Widget messages(Size size, Map<String, dynamic> map, BuildContext context,
-      int index, String docId) {
+      int index, String docId, List<DocumentSnapshot> documents, bool last) {
     return GestureDetector(
         onLongPress: () {
           if (true) {
@@ -653,46 +829,49 @@ class _ChatPageState extends State<ChatPage> {
               ),
               items: [
                 PopupMenuItem(
-                    value: Icons.delete,
-                    child: InkWell(
-                      child: ListTile(
-                        leading: Icon(
-                          CupertinoIcons.delete,
-                          color: btnColor,
-                        ),
-                        title: Text("Delete"),
+                  value: Icons.delete,
+                  child: InkWell(
+                    child: ListTile(
+                      leading: Icon(
+                        CupertinoIcons.delete,
+                        color: btnColor,
                       ),
-                    )),
+                      title: Text("Delete"),
+                    ),
+                  ),
+                ),
+                PopupMenuItem(
+                  value: Icons.delete_sweep,
+                  child: InkWell(
+                    child: ListTile(
+                      leading: Icon(
+                        Icons.delete_sweep,
+                        color: btnColor,
+                      ),
+                      title: Text("Delete for everyone"),
+                    ),
+                  ),
+                ),
               ],
               elevation: 8,
             ).then((selectedValue) async {
               if (selectedValue == Icons.delete) {
-                await FirebaseFirestore.instance
-                    .collection('chatroom')
-                    .doc(widget.chatRoomId)
-                    .collection('chats')
-                    .doc(docId)
-                    .delete()
-                    .then((value) {
-                  print("Message deleted");
-                }).catchError((err) {
-                  Fluttertoast.showToast(
-                    msg: "Message already deleted",
-                    toastLength: Toast.LENGTH_SHORT,
-                    gravity: ToastGravity.BOTTOM,
-                    timeInSecForIosWeb: 1,
-                  );
-                });
+                deleteForMe(size, map, context, index, docId, documents, last);
+              } else if (selectedValue == Icons.delete_sweep) {
+                deleteForMe(size, map, context, index, docId, documents, last);
+                deleteForEveryOne(
+                    size, map, context, index, docId, documents, last);
               }
             });
           }
         },
-        child: Container(child: messagesNext(size, map, context, index)));
+        child: Container(
+            child: messagesNext(size, map, context, index, documents, last)));
   }
 
-  Widget messagesNext(
-      Size size, Map<String, dynamic> map, BuildContext context, int index) {
-    Timestamp firestoreTimestamp = map["time"];
+  Widget messagesNext(Size size, Map<String, dynamic> map, BuildContext context,
+      int index, List<DocumentSnapshot> documents, bool last) {
+    Timestamp firestoreTimestamp = map["last_time"];
     DateTime dateTime = firestoreTimestamp.toDate();
     String formattedTime = DateFormat('h:mm a').format(dateTime);
 
@@ -716,7 +895,7 @@ class _ChatPageState extends State<ChatPage> {
             children: [
               Text(
                 DateFormat('d MMMM y').format(DateTime.parse(
-                    map['time'].toDate().toString().split(' ')[0])),
+                    map["last_time"].toDate().toString().split(' ')[0])),
                 style: TextStyle(
                   fontSize: 8.5,
                   fontWeight: FontWeight.w800,
@@ -789,7 +968,7 @@ class _ChatPageState extends State<ChatPage> {
                   children: [
                     Text(
                       DateFormat('d MMMM y').format(DateTime.parse(
-                          map['time'].toDate().toString().split(' ')[0])),
+                          map["last_time"].toDate().toString().split(' ')[0])),
                       style: TextStyle(
                         fontSize: 8.5,
                         fontWeight: FontWeight.w800,
@@ -878,7 +1057,7 @@ class _ChatPageState extends State<ChatPage> {
                   children: [
                     Text(
                       DateFormat('d MMMM y').format(DateTime.parse(
-                          map['time'].toDate().toString().split(' ')[0])),
+                          map["last_time"].toDate().toString().split(' ')[0])),
                       style: TextStyle(
                         fontSize: 8.5,
                         fontWeight: FontWeight.w800,
@@ -978,7 +1157,7 @@ class _ChatPageState extends State<ChatPage> {
                           children: [
                             Text(
                               DateFormat('d MMMM y').format(DateTime.parse(
-                                  map['time']
+                                  map["last_time"]
                                       .toDate()
                                       .toString()
                                       .split(' ')[0])),
@@ -1103,7 +1282,7 @@ class _ChatPageState extends State<ChatPage> {
                 children: [
                   Text(
                     DateFormat('d MMMM y').format(DateTime.parse(
-                        map['time'].toDate().toString().split(' ')[0])),
+                        map["last_time"].toDate().toString().split(' ')[0])),
                     style: TextStyle(
                       fontSize: 8.5,
                       fontWeight: FontWeight.w800,
@@ -1223,6 +1402,123 @@ class _ChatPageState extends State<ChatPage> {
         ],
       ),
     );
+  }
+
+  deleteForMe(
+      Size size,
+      Map<String, dynamic> map,
+      BuildContext context,
+      int index,
+      String docId,
+      List<DocumentSnapshot> documents,
+      bool last) async {
+    Map<String, dynamic> myMap = {};
+    if (documents.length > 1) {
+      myMap = documents[documents.length - 2].data() as Map<String, dynamic>;
+    }
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(Global.id.toString())
+        .collection('my_chats')
+        .doc(widget.doc["id"].toString())
+        .collection("chats")
+        .doc(docId)
+        .delete()
+        .then((value) {
+      print("Message deleted for me");
+      CollectionReference myUsersForSender = FirebaseFirestore.instance
+          .collection('users')
+          .doc(Global.id.toString())
+          .collection("my_chats");
+
+      DocumentReference userDocumentRef =
+          myUsersForSender.doc((widget.doc["id"]).toString());
+
+      if (last) {
+        if (documents.length > 1) {
+          userDocumentRef.set(myMap);
+        } else {
+          myUsersForSender.doc((widget.doc["id"]).toString()).delete();
+        }
+      }
+    }).catchError((err) {
+      Fluttertoast.showToast(
+        msg: "Message already deleted",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+      );
+    });
+  }
+
+  deleteForEveryOne(
+      Size size,
+      Map<String, dynamic> map,
+      BuildContext context,
+      int index,
+      String docId,
+      List<DocumentSnapshot> documents,
+      bool last) async {
+    await deleteForMe(size, map, context, index, docId, documents, last);
+
+    FirebaseFirestore.instance
+        .collection("users")
+        .doc(widget.doc["id"].toString())
+        .collection("my_chats")
+        .doc(Global.id.toString())
+        .collection("chats")
+        .orderBy("last_time", descending: true)
+        .limit(2)
+        .snapshots()
+        .listen((QuerySnapshot snapshot) {
+      if (snapshot.docs.isNotEmpty) {
+        List<Map<String, dynamic>> list = [];
+        for (QueryDocumentSnapshot document in snapshot.docs) {
+          Map<String, dynamic> data = document.data() as Map<String, dynamic>;
+          list.add(data);
+          // print(otherLast.toString() + "  " + data.toString());
+        }
+        bool otherLast = list[0]["doc_id"] == docId;
+        print(otherLast);
+        if (list.length != 0) {
+          FirebaseFirestore.instance
+              .collection('users')
+              .doc(widget.doc["id"].toString())
+              .collection("my_chats")
+              .doc(Global.id.toString())
+              .collection("chats")
+              .doc(docId)
+              .delete()
+              .then((value) {
+            print("Message deleted for everyone");
+            CollectionReference myUsersForSender = FirebaseFirestore.instance
+                .collection('users')
+                .doc(widget.doc["id"].toString())
+                .collection("my_chats");
+
+            DocumentReference userDocumentRef =
+                myUsersForSender.doc(Global.id.toString());
+
+            if (otherLast) {
+              if (list.length > 1) {
+                userDocumentRef.set(list[1]);
+              } else {
+                myUsersForSender.doc(Global.id.toString()).delete();
+              }
+            }
+          }).catchError((err) {
+            Fluttertoast.showToast(
+              msg: "Message already deleted",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+              timeInSecForIosWeb: 1,
+            );
+          });
+        }
+      } else {
+        print("No matching documents.");
+      }
+    });
   }
 }
 

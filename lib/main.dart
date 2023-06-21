@@ -1,14 +1,12 @@
 // ignore_for_file: unused_local_variable, prefer_const_constructors, prefer_const_literals_to_create_immutables
 
-import 'dart:developer';
-
 import 'package:amacle_studio_app/global/globals.dart';
 import 'package:amacle_studio_app/pages/bottom_bar_pages/bottom_bar_chat_page.dart';
 import 'package:amacle_studio_app/pages/bottom_bar_pages/manager_project_screen.dart';
-import 'package:amacle_studio_app/pages/bottom_bar_pages/chat.dart';
 import 'package:amacle_studio_app/pages/bottom_bar_pages/home_page.dart';
 import 'package:amacle_studio_app/pages/bottom_bar_pages/project_screen.dart';
 import 'package:amacle_studio_app/pages/loginpage.dart';
+import 'package:amacle_studio_app/pages/splash_screen.dart';
 import 'package:amacle_studio_app/utils/app_text.dart';
 import 'package:amacle_studio_app/utils/constant.dart';
 import 'package:amacle_studio_app/utils/widgets.dart';
@@ -50,7 +48,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         fontFamily: GoogleFonts.poppins().fontFamily,
       ),
-      home: LoginPage(),
+      home: SplashScreen(),
     );
   }
 }
