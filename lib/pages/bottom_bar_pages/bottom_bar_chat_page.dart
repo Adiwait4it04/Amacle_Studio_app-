@@ -144,11 +144,21 @@ class _BottomBarCharPageState extends State<BottomBarCharPage> {
                                                                     FontWeight
                                                                         .bold),
                                                           ),
-                                                          // subtitle: Text(
-                                                          //   display_list[index].last_chat!,
-                                                          //   style: const TextStyle(
-                                                          //       color: Colors.black),
-                                                          // ),
+                                                          trailing: Visibility(
+                                                            visible: documents[
+                                                                        index]
+                                                                    ["seen"] ==
+                                                                "no",
+                                                            child: Container(
+                                                              width: 10,
+                                                              height: 10,
+                                                              decoration: BoxDecoration(
+                                                                  shape: BoxShape
+                                                                      .circle,
+                                                                  color:
+                                                                      btnColor),
+                                                            ),
+                                                          ),
                                                           leading: CircleAvatar(
                                                             maxRadius:
                                                                 width(context) *

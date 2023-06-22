@@ -512,8 +512,52 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     generate();
+    markAsRead();
+    scrollDown();
     super.initState();
     checkPermissionforStorage();
+  }
+
+  ScrollController scrollController = ScrollController();
+
+  scrollDown() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      scrollController.jumpTo(scrollController.position.maxScrollExtent);
+    });
+  }
+
+  markAsRead() {
+    final batch = FirebaseFirestore.instance.batch();
+
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(Global.id.toString())
+        .collection("my_chats")
+        .doc(widget.doc["id"].toString())
+        .collection("chats")
+        .get()
+        .then((querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        batch.update(doc.reference, {'seen': 'yes'});
+      });
+
+      return batch.commit();
+    }).then((_) {
+      print('Marked as read.');
+    }).catchError((error) {
+      print('Network error maybe: $error');
+    });
+
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(Global.id.toString())
+        .collection("my_chats")
+        .doc(widget.doc["id"].toString())
+        .update({'seen': 'yes'}).then((_) {
+      print('Update completed successfully.');
+    }).catchError((error) {
+      print('Error updating document: $error');
+    });
   }
 
   openfile() {
@@ -529,6 +573,8 @@ class _ChatPageState extends State<ChatPage> {
   String fileName = "";
   late CancelToken cancelToken;
   DirectoryPath getPathFile = DirectoryPath();
+
+  bool scrolledDown = false;
 
   @override
   final TextEditingController _message = TextEditingController();
@@ -611,13 +657,18 @@ class _ChatPageState extends State<ChatPage> {
                 builder: (BuildContext context,
                     AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.data != null) {
+                    markAsRead();
                     List<DocumentSnapshot> documents = snapshot.data!.docs;
                     return ListView.builder(
+                      controller: scrollController,
                       itemCount: snapshot.data!.docs.length,
                       itemBuilder: (context, index) {
                         Map<String, dynamic> map = snapshot.data!.docs[index]
                             .data() as Map<String, dynamic>;
                         try {
+                          if (index == snapshot.data!.docs.length - 1) {
+                            scrolledDown = true;
+                          }
                           return messages(
                               size,
                               map,
@@ -801,6 +852,9 @@ class _ChatPageState extends State<ChatPage> {
 
   Widget messages(Size size, Map<String, dynamic> map, BuildContext context,
       int index, String docId, List<DocumentSnapshot> documents, bool last) {
+    if (!scrolledDown) {
+      scrollDown();
+    }
     return GestureDetector(
         onLongPress: () {
           if (true) {
@@ -840,18 +894,19 @@ class _ChatPageState extends State<ChatPage> {
                     ),
                   ),
                 ),
-                PopupMenuItem(
-                  value: Icons.delete_sweep,
-                  child: InkWell(
-                    child: ListTile(
-                      leading: Icon(
-                        Icons.delete_sweep,
-                        color: btnColor,
+                if (map["sender_id"] == Global.id)
+                  PopupMenuItem(
+                    value: Icons.delete_sweep,
+                    child: InkWell(
+                      child: ListTile(
+                        leading: Icon(
+                          Icons.delete_sweep,
+                          color: btnColor,
+                        ),
+                        title: Text("Delete for everyone"),
                       ),
-                      title: Text("Delete for everyone"),
                     ),
                   ),
-                ),
               ],
               elevation: 8,
             ).then((selectedValue) async {
@@ -878,7 +933,7 @@ class _ChatPageState extends State<ChatPage> {
     if (map['type'] == "text") {
       return Container(
         width: size.width,
-        alignment: map['sendby'] == Global.mainMap[0]["name"]
+        alignment: (map["sender_id"] == Global.id)
             ? Alignment.centerRight
             : Alignment.centerLeft,
         child: Container(
@@ -886,8 +941,7 @@ class _ChatPageState extends State<ChatPage> {
           margin: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
-            color:
-                map['sendby'] == Global.mainMap[0]["name"] ? btnColor : white,
+            color: (map["sender_id"] == Global.id) ? btnColor : white,
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -899,9 +953,7 @@ class _ChatPageState extends State<ChatPage> {
                 style: TextStyle(
                   fontSize: 8.5,
                   fontWeight: FontWeight.w800,
-                  color: map['sendby'] == Global.mainMap[0]["name"]
-                      ? white
-                      : black,
+                  color: (map["sender_id"] == Global.id) ? white : black,
                 ),
               ),
               Text(
@@ -909,9 +961,8 @@ class _ChatPageState extends State<ChatPage> {
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w500,
-                  color: !(map['sendby'] == Global.mainMap[0]["name"])
-                      ? black
-                      : Colors.white,
+                  color:
+                      !((map["sender_id"] == Global.id)) ? black : Colors.white,
                 ),
               ),
               Text(
@@ -919,9 +970,7 @@ class _ChatPageState extends State<ChatPage> {
                 style: TextStyle(
                   fontSize: 8.5,
                   fontWeight: FontWeight.w800,
-                  color: map['sendby'] == Global.mainMap[0]["name"]
-                      ? white
-                      : black,
+                  color: (map["sender_id"] == Global.id) ? white : black,
                 ),
               ),
             ],
@@ -936,7 +985,7 @@ class _ChatPageState extends State<ChatPage> {
             // height: size.height / 2.21,
             width: size.width,
             padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-            alignment: map['sendby'] == Global.mainMap[0]["name"]
+            alignment: (map["sender_id"] == Global.id)
                 ? Alignment.centerRight
                 : Alignment.centerLeft,
             child: InkWell(
@@ -950,9 +999,7 @@ class _ChatPageState extends State<ChatPage> {
               child: Container(
                 padding: EdgeInsets.all(8.0),
                 decoration: BoxDecoration(
-                  color: map['sendby'] == Global.mainMap[0]["name"]
-                      ? btnColor
-                      : white,
+                  color: (map["sender_id"] == Global.id) ? btnColor : white,
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(),
                   // boxShadow: [
@@ -972,9 +1019,7 @@ class _ChatPageState extends State<ChatPage> {
                       style: TextStyle(
                         fontSize: 8.5,
                         fontWeight: FontWeight.w800,
-                        color: map['sendby'] == Global.mainMap[0]["name"]
-                            ? white
-                            : black,
+                        color: (map["sender_id"] == Global.id) ? white : black,
                       ),
                     ),
                     addVerticalSpace(height(context) * 0.004),
@@ -1009,9 +1054,7 @@ class _ChatPageState extends State<ChatPage> {
                       style: TextStyle(
                         fontSize: 8.5,
                         fontWeight: FontWeight.w800,
-                        color: map['sendby'] == Global.mainMap[0]["name"]
-                            ? white
-                            : black,
+                        color: (map["sender_id"] == Global.id) ? white : black,
                       ),
                     ),
                   ],
@@ -1027,15 +1070,13 @@ class _ChatPageState extends State<ChatPage> {
             // height: size.height / 2.21,
             width: size.width,
             padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-            alignment: map['sendby'] == Global.mainMap[0]["name"]
+            alignment: (map["sender_id"] == Global.id)
                 ? Alignment.centerRight
                 : Alignment.centerLeft,
             child: Container(
               padding: EdgeInsets.all(8.0),
               decoration: BoxDecoration(
-                color: map['sendby'] == Global.mainMap[0]["name"]
-                    ? btnColor
-                    : white,
+                color: (map["sender_id"] == Global.id) ? btnColor : white,
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(),
                 // boxShadow: [
@@ -1061,9 +1102,7 @@ class _ChatPageState extends State<ChatPage> {
                       style: TextStyle(
                         fontSize: 8.5,
                         fontWeight: FontWeight.w800,
-                        color: map['sendby'] == Global.mainMap[0]["name"]
-                            ? white
-                            : black,
+                        color: (map["sender_id"] == Global.id) ? white : black,
                       ),
                     ),
                     addVerticalSpace(height(context) * 0.004),
@@ -1093,9 +1132,7 @@ class _ChatPageState extends State<ChatPage> {
                       style: TextStyle(
                         fontSize: 8.5,
                         fontWeight: FontWeight.w800,
-                        color: map['sendby'] == Global.mainMap[0]["name"]
-                            ? white
-                            : black,
+                        color: (map["sender_id"] == Global.id) ? white : black,
                       ),
                     ),
                   ],
@@ -1111,7 +1148,7 @@ class _ChatPageState extends State<ChatPage> {
             // height: size.height / 2.21,
             width: size.width * 0.6,
             padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-            alignment: map['sendby'] == Global.mainMap[0]["name"]
+            alignment: (map["sender_id"] == Global.id)
                 ? Alignment.centerRight
                 : Alignment.centerLeft,
             child: StreamBuilder<QuerySnapshot>(
@@ -1126,9 +1163,8 @@ class _ChatPageState extends State<ChatPage> {
                       width: width(context) * 0.6,
                       padding: EdgeInsets.all(8.0),
                       decoration: BoxDecoration(
-                        color: map['sendby'] == Global.mainMap[0]["name"]
-                            ? btnColor
-                            : white,
+                        color:
+                            (map["sender_id"] == Global.id) ? btnColor : white,
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(),
                         // boxShadow: [
@@ -1164,10 +1200,9 @@ class _ChatPageState extends State<ChatPage> {
                               style: TextStyle(
                                 fontSize: 8.5,
                                 fontWeight: FontWeight.w800,
-                                color:
-                                    map['sendby'] == Global.mainMap[0]["name"]
-                                        ? white
-                                        : black,
+                                color: (map["sender_id"] == Global.id)
+                                    ? white
+                                    : black,
                               ),
                             ),
                             addVerticalSpace(height(context) * 0.004),
@@ -1231,10 +1266,9 @@ class _ChatPageState extends State<ChatPage> {
                               style: TextStyle(
                                 fontSize: 8.5,
                                 fontWeight: FontWeight.w800,
-                                color:
-                                    map['sendby'] == Global.mainMap[0]["name"]
-                                        ? white
-                                        : black,
+                                color: (map["sender_id"] == Global.id)
+                                    ? white
+                                    : black,
                               ),
                             ),
                           ],
@@ -1258,15 +1292,13 @@ class _ChatPageState extends State<ChatPage> {
             // height: size.height / 2.21,
             width: size.width,
             padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-            alignment: map['sendby'] == Global.mainMap[0]["name"]
+            alignment: (map["sender_id"] == Global.id)
                 ? Alignment.centerRight
                 : Alignment.centerLeft,
             child: Container(
               padding: EdgeInsets.all(8.0),
               decoration: BoxDecoration(
-                color: map['sendby'] == Global.mainMap[0]["name"]
-                    ? btnColor
-                    : white,
+                color: (map["sender_id"] == Global.id) ? btnColor : white,
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(),
                 // boxShadow: [
@@ -1286,9 +1318,7 @@ class _ChatPageState extends State<ChatPage> {
                     style: TextStyle(
                       fontSize: 8.5,
                       fontWeight: FontWeight.w800,
-                      color: map['sendby'] == Global.mainMap[0]["name"]
-                          ? white
-                          : black,
+                      color: (map["sender_id"] == Global.id) ? white : black,
                     ),
                   ),
                   addVerticalSpace(height(context) * 0.004),
@@ -1311,8 +1341,7 @@ class _ChatPageState extends State<ChatPage> {
                         ? _audio(
                             message: map["message"],
                             index: index,
-                            isCurrentUser:
-                                map['sendby'] == Global.mainMap[0]["name"])
+                            isCurrentUser: (map["sender_id"] == Global.id))
                         : CircularProgressIndicator(),
                   ),
                   addVerticalSpace(height(context) * 0.004),
@@ -1321,9 +1350,7 @@ class _ChatPageState extends State<ChatPage> {
                     style: TextStyle(
                       fontSize: 8.5,
                       fontWeight: FontWeight.w800,
-                      color: map['sendby'] == Global.mainMap[0]["name"]
-                          ? white
-                          : black,
+                      color: (map["sender_id"] == Global.id) ? white : black,
                     ),
                   ),
                 ],

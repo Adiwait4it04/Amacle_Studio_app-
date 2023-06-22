@@ -5,7 +5,6 @@ import 'package:amacle_studio_app/pages/bottom_bar_pages/bottom_bar_chat_page.da
 import 'package:amacle_studio_app/pages/bottom_bar_pages/manager_project_screen.dart';
 import 'package:amacle_studio_app/pages/bottom_bar_pages/home_page.dart';
 import 'package:amacle_studio_app/pages/bottom_bar_pages/project_screen.dart';
-import 'package:amacle_studio_app/pages/loginpage.dart';
 import 'package:amacle_studio_app/pages/splash_screen.dart';
 import 'package:amacle_studio_app/utils/app_text.dart';
 import 'package:amacle_studio_app/utils/constant.dart';
