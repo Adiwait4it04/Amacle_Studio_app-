@@ -9,7 +9,7 @@ class Github {
 
   File? image;
 
-  final String personalAccessToken = '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';
+  final String personalAccessToken = '';
   final String username = 'Manvendra-Singh-SMCIC';
   final String apiUrl = 'https://api.github.com';
 
@@ -18,7 +18,7 @@ class Github {
       Uri.parse(
           'https://api.github.com/repos/Manvendra-Singh-SMCIC/Bubble-Trouble'),
       headers: {
-        'Authorization': 'Bearer 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',
+        'Authorization': 'Bearer authtoken',
         'Accept': 'application/vnd.github.v3+json',
       },
     );
@@ -151,7 +151,7 @@ class Github {
 
   String baseUrl = 'https://api.github.com/';
   String authToken =
-      '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'; // Replace with your GitHub authentication token
+      'authtoken'; // Replace with your GitHub authentication token
 
   Future<void> createIssue(String repoOwner, String repoName, String issueTitle,
       String issueBody) async {
